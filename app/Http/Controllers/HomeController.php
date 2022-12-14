@@ -54,10 +54,23 @@ class HomeController extends Controller
                 ['cat' => 'INSPEKSI', 'value' => $inspeksi_done,'color' => '#d19a66'],
                 ['cat' => 'SWA', 'value' => $swa_status, 'color' => '#cc6633'],
             );
-            $swa = LogsSwa::where('users_id', Auth::id())->orderBy('id','desc')->get();
+
+            $swa_group = LogsSwa::where('users_id', Auth::id())->groupBy('users_id')->get();
+            $swa = [];
+            foreach ($swa_group as $sg) {
+                $row = LogsSwa::where('users_id', $sg->users_id)->orderBy('id','desc')->get();
+
+                array_push($swa, array(
+                    'users' => $sg->users,
+                    'swa' => $row
+                ));
+            }
+
+            $data['swa_rec'] = $swa;
+            
             // $data['vendor'] = User::where('status','Vendor')->get();
             $data['unit'] = Unit::all();  
-            $data['swa'] = $swa;
+            
 
         }elseif(Auth::user()->status == 'Admin'){
             $data['wp'] = WorkPermit::all();

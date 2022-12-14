@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Logs;
+use App\LogsSwa;
 use App\Providers\Whatsapp;
 use App\Unit;
 use App\User;
@@ -33,6 +34,22 @@ class WorkOrderController extends Controller
                 ['cat' => 'INSPEKSI', 'value' => $inspeksi_done,'color' => '#F49D1A'],
                 ['cat' => 'SWA', 'value' => $swa_status, 'color' => '#CF0A0A'],
             );
+
+            $swa_group = LogsSwa::where('users_id', Auth::id())->groupBy('users_id')->get();
+            $swa = [];
+            foreach ($swa_group as $sg) {
+                $rows = LogsSwa::where('users_id', $sg->users_id)->orderBy('id','desc')->get();
+                $logs = "";
+                foreach ($rows as $row) {
+                    $logs = $logs."* ".$row->pekerjaan."\n\t-".$row->tgl_terbit." ".$row->temuan."\n";
+                }
+
+                array_push($swa, array(
+                    'vendor' => $sg->users->name,
+                    'logs' => $logs
+                ));
+                
+            }
             // $data['vendor'] = User::where('status','Vendor')->get();
             $data['unit'] = Unit::all();  
         }elseif(Auth::user()->status == 'Admin'){
@@ -51,6 +68,23 @@ class WorkOrderController extends Controller
                 ['cat' => 'SWA', 'value' => $swa_status, 'color' => '#CF0A0A'],
             );
 
+            $swa_group = LogsSwa::groupBy('users_id')->get();
+            $swa = [];
+            foreach ($swa_group as $sg) {
+                $rows = LogsSwa::where('users_id', $sg->users_id)->orderBy('id','desc')->get();
+                $logs = "";
+                foreach ($rows as $row) {
+                    $logs = $logs."* ".$row->pekerjaan."\n\t-".$row->tgl_terbit." ".$row->temuan."\n";
+                }
+
+                array_push($swa, array(
+                    'vendor' => $sg->users->name,
+                    'logs' => $logs
+                ));
+                
+            }
+          
+
             
 
         }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && Auth::user()->usersUnit != null ){
@@ -67,9 +101,26 @@ class WorkOrderController extends Controller
                 ['cat' => 'INSPEKSI', 'value' => $inspeksi_done,'color' => '#F49D1A'],
                 ['cat' => 'SWA', 'value' => $swa_status, 'color' => '#CF0A0A'],
             );
+
+            $swa_group = LogsSwa::groupBy('users_id')->get();
+            $swa = [];
+            foreach ($swa_group as $sg) {
+                $rows = LogsSwa::where('users_id', $sg->users_id)->orderBy('id','desc')->get();
+                $logs = "";
+                foreach ($rows as $row) {
+                    $logs = $logs."* ".$row->pekerjaan."\n\t-".$row->tgl_terbit." ".$row->temuan."\n";
+                }
+
+                array_push($swa, array(
+                    'vendor' => $sg->users->name,
+                    'logs' => $logs
+                ));
+                
+            }
+            
         }
 
-        return compact('resume','data_chart');
+        return compact('resume','data_chart','swa');
     }
 
     function view(Request $r)
