@@ -145,6 +145,7 @@ class InspeksiController extends Controller
                 $logs_swa->users_id = $sa->workPermit->users_id;
                 $logs_swa->tgl_terbit = date('Y-m-d');
                 $logs_swa->temuan = $inspeksi->catatan_temuan;
+                $logs_swa->pekerjaan = $sa->workPermit->detail_pekerjaan;
                 $logs_swa->save();
                 
                 $text = "Status SWA untuk pekerjaan :".

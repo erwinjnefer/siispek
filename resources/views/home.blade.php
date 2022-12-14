@@ -71,7 +71,7 @@
 
 <div class="row">
     {{-- {{ Auth::user() }} --}}
-    @if(Auth::user()->status != NULL)
+@if(Auth::user()->status != NULL)
     <div class="col-lg-6 col-xs-6">
         <!-- small box -->
         <div class="small-box bg-red">
@@ -118,6 +118,43 @@
             </div>
             <div class="box-body">
                 <div id="chartdiv"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <h4>Logs SWA</h4>
+                <div class="box-tools">
+                    {{-- <button type="button" class="btn btn-success btn-sm pull-right" data-toggle="modal"
+                        data-target="#cari-modal">
+                        <i class="fa fa-calendar"></i> Cari Tanggal
+                    </button> --}}
+                </div>
+            </div>
+            <div class="box-body">
+                <table class="table table-hover">
+                    <tbody>
+                        @foreach ($swa_rec as $item)
+                            <tr>
+                                <th colspan="2">{!! $item['users']->name !!}</th>
+                                <td colspan="2">{!! "<b>".$item['swa']->count()."</b> SWA Logs" !!}</td>
+                            </tr>
+                            @php
+                            $no = 1;
+                            @endphp
+                            @foreach ($item['swa'] as $swa)
+                                <tr>
+                                    <td width="1%">{{ $no ++ }}</td>
+                                    <td width="5%">{{ $swa->tgl_terbit }}</td>
+                                    <td width="15%"><b>{{ $swa->temuan }}</b></td>
+                                    <td width="15%"><b>{{ $swa->pekerjaan }}</b></td>
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -203,17 +240,17 @@
             </div>
         </div>
     </div>
-        
-        @else
-        <div class="col-md-12">
-            
-            <div class="alert alert-info alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h4><i class="icon fa fa-ban"></i> Alert!</h4>
-                Akun anda dalam proses validasi oleh ADMIN, terimakasih !
-            </div>
+
+@else
+    <div class="col-md-12">
+
+        <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+            Akun anda dalam proses validasi oleh ADMIN, terimakasih !
         </div>
-        @endif
+    </div>
+@endif
     </div>
     
     @endsection

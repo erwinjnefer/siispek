@@ -11,6 +11,7 @@ use App\InspeksiLogs;
 use App\InspeksiMandiri;
 use App\JsaPegawai;
 use App\Logs;
+use App\LogsSwa;
 use App\Pegawai;
 use App\Providers\Whatsapp;
 use App\User;
@@ -408,6 +409,13 @@ class InspeksiController extends Controller
             })->first();
             
             if($sa->status == 'SWA'){
+                $logs_swa = new LogsSwa();
+                $logs_swa->users_id = $sa->workPermit->users_id;
+                $logs_swa->tgl_terbit = date('Y-m-d');
+                $logs_swa->temuan = $inspeksi->catatan_temuan;
+                $logs_swa->pekerjaan = $sa->workPermit->detail_pekerjaan;
+                $logs_swa->save();
+                
                 $text = "Status SWA untuk pekerjaan :".
                 "\nTgl Pekerjaan : ".date('d-m-Y', strtotime($sa->workPermit->tgl_pengajuan)).
                 "\nVendor : ".$sa->workPermit->users->name.
