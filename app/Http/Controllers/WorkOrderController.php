@@ -29,6 +29,7 @@ class WorkOrderController extends Controller
         $wo = [];
         $unit = Unit::all();
         $create_wp = 'NO';
+
         if($u->status == 'Admin'|| (Auth::user()->status == 'Manajer' && Auth::user()->usersUnit->unit->nama == 'UP2K')){
             $wo = WorkOrder::orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){

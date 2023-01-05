@@ -261,10 +261,14 @@
                                         <a class="btn btn-success" href="{{ url('work-permit/detail?id='.$wo->woWp->work_permit_id) }}">BUKA WORK PERMIT</a>
                                         @else
 
+                                        @if(Auth::user()->status == 'Vendor')
+                                        
                                         @if($create_wp == 'YES')
                                         <a class="btn btn-warning" href="{{ url('work-permit/form?id='.$wo->id) }}">CREATE WORK PERMIT</a>
                                         @else
                                         <span class="badge bg-yellow">Masih ada SWA yang belum terselesaikan</span>
+                                        @endif
+
                                         @endif
                                         
                                         @endif
