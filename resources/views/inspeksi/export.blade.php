@@ -63,7 +63,7 @@
         <tr>
             <td width="1%" align="center">d</td>
             <td width="7%">Lokasi Pekerjaan</td>
-            <td width="15%">: {!! $inspeksiLanjut->lokasi !!}</td>
+            <td width="15%">: {!! $inspeksiLanjut->lokasi.' '.$inspeksiLanjut->koordinat !!}</td>
         </tr>
         <tr>
             <td width="1%" align="center">e</td>
