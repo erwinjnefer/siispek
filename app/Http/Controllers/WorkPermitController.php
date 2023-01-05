@@ -101,13 +101,17 @@ class WorkPermitController extends Controller
 
     public function repair(Request $r){
         $wo = WorkOrder::all();
+        $list = [];
         foreach ($wo as $w) {
             if($w->woWp != null){
-                $w->tgl_mulai = $w->woWp->workPermit->tgl_mulai;
-                $w->tgl_selesai = $w->woWp->workPermit->tgl_selesai;
-                $w->save();
+                array_push($list, $w);
+                // $w->tgl_mulai = $w->woWp->workPermit->tgl_mulai;
+                // $w->tgl_selesai = $w->woWp->workPermit->tgl_selesai;
+                // $w->save();
             }
         }
+
+        return $list;
         
         return 'done';
     }
