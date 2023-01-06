@@ -18,7 +18,7 @@
 @section('content')
 <div class="row">
     
-    <div class="modal fade" id="review-im-modal">
+    {{-- <div class="modal fade" id="review-im-modal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form id="form_review_im" enctype="multipart/form-data">
@@ -51,7 +51,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="modal fade" id="inspeksi-mandiri-review">
         <div class="modal-dialog modal-lg">
@@ -574,11 +574,11 @@
     <div class="col-md-12">
         <div class="box">
             <div class="box-header with-border">
-                <h4>III. INFORMASI MANDIRI</h4>
+                <h4>III. INSPEKSI MANDIRI</h4>
                 <div class="box-tools">
-                    @if($wp->inspeksi != null && $wp->inspeksi->status != 'SWA')
+                    {{-- @if($wp->inspeksi != null && $wp->inspeksi->status != 'SWA')
                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#review-im-modal"><i class="fa fa-check"></i> Review Inspeksi Mandiri</button>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
             <div class="box-body table-responsive">

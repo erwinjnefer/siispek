@@ -23,15 +23,16 @@ class InspeksiController extends Controller
     public function view(Request $r)
     {
 
-        $u = User::find($r->users_id);
+        $u = User::find(Auth::id());
+        // return $u;
         
         $wp = [];
         if($u->status == 'Admin'){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('submit', 1)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('users_id', $u->id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('submit', 1)->where('users_id', $u->id)->orderBy('id','desc')->get();
         }elseif( ($u->level == 4 ||$u->level == 3 || $u->level == 2) && $u->usersUnit != null ){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('submit', 1)->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
         }
         return compact('wp');
     }
@@ -90,7 +91,7 @@ class InspeksiController extends Controller
                 "\nJenis Pekerjaan : ".$inspeksi->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -106,7 +107,7 @@ class InspeksiController extends Controller
                 "\nJenis Pekerjaan : ".$inspeksi->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
     
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -145,7 +146,7 @@ class InspeksiController extends Controller
             $logs->work_order_id = $wo->id;
             $logs->save();
 
-            $msg = "Hi *".$inspeksi->workPermit->users->name."*,\nstatus operasi untuk pekerjaan \n*$wo->nama* telah dibuka. \nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+            $msg = "Hi *".$inspeksi->workPermit->users->name."*,\nstatus operasi untuk pekerjaan \n*$wo->nama* telah dibuka. \nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
             event(new Whatsapp($wo->users->no_wa, $msg));
             DB::commit();
             return 'success';
@@ -176,7 +177,7 @@ class InspeksiController extends Controller
                 "\nLokasi Pekerjaan : ".$sa->workPermit->lokasi_pekerjaan.
                 "\n\nStatus Review : ".$sa->review.
                 "\nCatatan Review : ".$sa->catatan_review.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
                 event(new Whatsapp($sa->workPermit->workPermitPPK3->pegawai->no_wa, $text));
             }
@@ -250,7 +251,7 @@ class InspeksiController extends Controller
                 "\nCatatan Temuan : ".$inspeksi->catatan_temuan.
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -270,7 +271,7 @@ class InspeksiController extends Controller
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
                 
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -356,7 +357,7 @@ class InspeksiController extends Controller
                 "\nCatatan Temuan : ".$inspeksi->catatan_temuan.
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -376,7 +377,7 @@ class InspeksiController extends Controller
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
                 
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -450,7 +451,7 @@ class InspeksiController extends Controller
             "\nDetail Pekerjaan : ".$inspeksi->inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksi->lokasi.
             
-            "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
             if($ud != null && $ud->no_wa != null){
                 // $wa = new MBroker();

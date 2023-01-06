@@ -81,7 +81,7 @@ class WorkOrderController extends Controller
             $logs->work_order_id = $wo->id;
             $logs->save();
 
-            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di http://sscpln.com/siispek atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
+            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di http://sscpln.com/wp atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
             event(new Whatsapp($wo->users->no_wa, $msg));
 
             DB::commit();

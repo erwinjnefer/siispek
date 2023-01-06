@@ -34,9 +34,10 @@
                         <div class="form-group">
                             <label for="">Pegawai</label>
                             <select class="form-control" name="jsa_pegawai_id" id="jsa_pegawai_id" required>
-                                <option value=""></option>
                                 @foreach ($wp->jsa->jsaPegawai as $jpp)
+                                    @if(Session::get('auth')->id == $jpp->pegawai->id)
                                     <option value="{{ $jpp->id }}">{{ $jpp->pegawai->nama }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -210,41 +211,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="review-im-modal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form id="form_review_im" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title">Review Inspeksi Mandiri</h4>
-                    </div>
-                    <div class="modal-body">
-                        @csrf
-                        <input type="hidden" name="id" value="{{ $wp->inspeksi->id }}">
-
-                        <div class="form-group">
-                            <label for="">Status Review</label>
-                            <select class="form-control" name="status_review">
-                                <option>Inpseksi Mandiri telah direview dan Valid</option>
-                                <option>SWA</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="">Catatan</label>
-                            <textarea class="form-control" name="catatan" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary pull-left">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+ 
     <div class="modal fade" id="create-inspeksi-lanjut-modal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -662,7 +629,7 @@
             <div class="box-header with-border">
                 <h4>III. INSPEKSI MANDIRI</h4>
                 <div class="box-tools">
-                    @if($wp->inspeksi != null && $wp->inspeksi->status != 'SWA')
+                    @if($wp->inspeksi != null && $wp->inspeksi->status != 'SWA' && Session::get('auth')->jabatan == 'Pelaksana Pekerjaan')
                     <button type="button" class="btn btn-success btn-sm btn-inspeksi-mandiri"
                     data-id="{{ $wp->inspeksi != null ? $wp->inspeksi->id : '' }}" 
                     data-wp_id="{{ $wp->id }}" 
@@ -719,6 +686,7 @@
         </div>
     </div>
 
+    @if(Session::get('auth')->jabatan != 'Pelaksana Pekerjaan')
     <div class="col-md-12">
         <div class="box">
             <div class="box-header with-border">
@@ -771,7 +739,7 @@
                                     @endif
                                 </td>
                                 <td align="center">
-                                    @if ($inspeksiLanjut->inspeksi->status == 'Open' && $inspeksiLanjut->app_k3_vendor == NULL)
+                                    @if ($inspeksiLanjut->inspeksi->status == 'Open' && $inspeksiLanjut->app_k3_vendor == NULL && Session::get('auth')->jabatan != 'Pelaksana Pekerjaan')
                                         <a href="#" class="btn-app-k3-vendor" data-id="{{ $inspeksiLanjut->id }}"><span class="badge bg-blue">Approve</span></a>
                                     @elseif($inspeksiLanjut->app_k3_vendor != NULL)
                                     {!! QrCode::size(40)->generate('Approved by K3 Vendor'); !!}
@@ -800,14 +768,15 @@
             </div>
         </div>
     </div>
+    @endif
     
 
     
-    <div class="col-md-12">
+    {{-- <div class="col-md-12">
         @if ($wp->inspeksi != null && $wp->inspeksi->submit == 0 && $wp->inspeksi->status != 'SWA')
                 <button class="btn btn-success pull-right btn-submit" data-id="{{ $wp->inspeksi->id }}">SUBMIT</button>
                 @endif
-    </div>
+    </div> --}}
 
     
 </div>
@@ -1079,7 +1048,7 @@
         $('#r_sop').val($(this).data('sop'))
         $('#r_wp').val($(this).data('wp'))
 
-        $('#inspeksi-mandiri-review').modal('show')
+        $('#inspeksi-mandiri-preview').modal('show')
 
 
     })

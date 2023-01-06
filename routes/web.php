@@ -20,7 +20,7 @@ Route::get('/', function () {
     return redirect('login');
 });
 
-Route::get('/test', function () {
+Route::get('/', function () {
     $ins_lanjut = InspeksiLanjut::all();
     
     return 'done';

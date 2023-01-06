@@ -95,7 +95,7 @@ class FPageController extends Controller
                 "\nJenis Pekerjaan : ".$inspeksi->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -111,7 +111,7 @@ class FPageController extends Controller
                 "\nJenis Pekerjaan : ".$inspeksi->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
     
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -154,7 +154,7 @@ class FPageController extends Controller
                 "\nLokasi Pekerjaan : ".$sa->workPermit->lokasi_pekerjaan.
                 "\n\nStatus Review : ".$sa->review.
                 "\nCatatan Review : ".$sa->catatan_review.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
                 event(new Whatsapp($ud->no_wa, $text));
                 
@@ -227,7 +227,7 @@ class FPageController extends Controller
                 "\nJenis Pekerjaan : ".$sa->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$sa->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$sa->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -247,7 +247,7 @@ class FPageController extends Controller
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
                 
-                "\nUntuk lebih detail kunjungi http://sscpln.com/siispek/inspeksi/detail?id=".$inspeksi->inspeksi->work_permit_id.". Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/wp/inspeksi/detail?id=".$inspeksi->inspeksi->work_permit_id.". Terimakasih";
     
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -312,7 +312,7 @@ class FPageController extends Controller
             "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
             
-            "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
             if($pegawai->no_wa != null){
                 event(new Whatsapp($pegawai->no_wa, $text));
@@ -349,7 +349,7 @@ class FPageController extends Controller
             "\nJenis Pekerjaan : ".$inspeksi->workPermit->jenis_pekerjaan.
             "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
-            "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
             
             if($ud != null && $ud->no_wa != null){
                 event(new Whatsapp($ud->no_wa, $text));
@@ -415,7 +415,7 @@ class FPageController extends Controller
             "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksiLanjut->lokasi.
             
-            "\nUntuk lebih detail kunjungi http://sscpln.com/siispek Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
 
             if($ud != null && $ud->no_wa != null){
                 // $wa = new MBroker();
