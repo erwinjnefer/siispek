@@ -133,6 +133,11 @@
                                 <option>Saya tidak memahami Working Permit</option>
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label for="">Foto</label>
+                            <input type="file" name="foto" accept="image/capture" required class="form-control">
+                        </div>
                         
                         
                     </div>
@@ -200,6 +205,11 @@
                         <div class="form-group">
                             <label for="">WP</label>
                             <input type="text" class="form-control" placeholder="" readonly id="r_wp">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="">Foto</label>
+                            <img src="" id="r_foto" style="width: 100%">
                         </div>
                         
                         
@@ -670,6 +680,7 @@
                                 data-sop="{{ $im->sop }}"
                                 data-jsa="{{ $im->jsa }}"
                                 data-wp="{{ $im->wp }}"
+                                data-foto="{{ asset($im->foto) }}"
                                 >Detail</a>
                             </td>
                         </tr>
@@ -1047,6 +1058,9 @@
         $('#r_jsa').val($(this).data('jsa'))
         $('#r_sop').val($(this).data('sop'))
         $('#r_wp').val($(this).data('wp'))
+
+        var foto = $(this).data('foto')
+        $('#r_foto').attr('src', foto)
 
         $('#inspeksi-mandiri-preview').modal('show')
 

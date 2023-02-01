@@ -65,7 +65,7 @@ Route::group(['prefix' => 'rest'], function(){
     Route::get('inspeksi/read-jsa', 'Rest\InspeksiController@readJsa');
     Route::get('inspeksi/read-sop', 'Rest\InspeksiController@readSop');
 
-    Route::get('inspeksi/inspeksi-mandiri', 'Rest\InspeksiController@inspeksiMandiri');
+    Route::post('inspeksi/inspeksi-mandiri', 'Rest\InspeksiController@inspeksiMandiri');
     Route::get('inspeksi/review-inspeksi-mandiri', 'Rest\InspeksiController@reviewInspeksiMandiri');
     Route::get('inspeksi/submit', 'Rest\InspeksiController@submitInspeksi');
 

@@ -20,7 +20,8 @@
         "laravel/ui": "^2.5",
         "maatwebsite/excel": "^3.1",
         "milon/barcode": "^7.0",
-        "simplesoftwareio/simple-qrcode": "~4"
+        "simplesoftwareio/simple-qrcode": "~4",
+        "lcobucci/jwt": "^3.3.3"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
@@ -33,7 +34,8 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "platform-check": false
+        "platform-check": false,
+        "disable-tls": true
     },
     "extra": {
         "laravel": {

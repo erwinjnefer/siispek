@@ -57,6 +57,8 @@ class FPageController extends Controller
             $wp = WorkPermit::find($r->wp_id);
             $inspeksi = Inspeksi::find($r->id);
 
+            $foto = $r->file('foto');
+
             $im = new InspeksiMandiri();
             $im->tgl_inspeksi = date('Y-m-d');
             $im->time = date('H:i:s');
@@ -73,7 +75,14 @@ class FPageController extends Controller
             $im->jsa = $r->jsa;
             $im->sop = $r->sop;
             $im->wp = $r->wp;
+            if($foto != null){
+                $im->foto = 'file/'.date('YmdHis').'-'.$foto->getClientOriginalName();
+            }
             $im->save();
+            if($foto != null){
+                $foto->move('file', $im->foto);
+            }
+            
 
             $logs = new Logs();
             $logs->date = date('Y-m-d H:i:s');

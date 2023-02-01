@@ -1,12 +1,13 @@
 @extends('layouts.master')
 @section('css')
 <link rel="stylesheet" href="{!! asset('/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') !!}">
+<link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
 @endsection
 @section('content-header')
 <section class="content-header">
     <h1>
         Work Permit
-        <small>List</small>
+        <small>30 Hari sejak tanggal {{ date('d-m-Y', strtotime($d1)) }}</small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="{!! url('home') !!}"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -78,17 +79,47 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="filter-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_filter" method="get" action="{{ url('work-permit') }}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Filter 30 Hari Sejak Tanggal</h4>
+                </div>
+                <div class="modal-body">
+                    @csrf
+                    
+                    
+                    <div class="form-group">
+                        <input type="text" required readonly name="date" class="form-control date">
+                    </div>
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="box">
             <div class="box-body">
                 <div class="row">
-                    {{-- <div class="col-md-2">
+                    <div class="col-md-2">
                         <div class="form-group">
-                            <button class="btn btn-primary form-control btn-create" title="Create Work Permit"><i class="fa fa-pencil"></i> CREATE WP</button>
+                            <button class="btn btn-warning form-control" data-toggle="modal" data-target="#filter-modal" title="Filter Tanggal"><i class="fa fa-calendar"></i> FILTER TANGGAL</button>
                         </div>
-                    </div> --}}
-                    <div class="col-md-12">
+                    </div>
+                    <div class="col-md-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-search"></i></span>
                             <input type="text" class="form-control" id="key_search" placeholder="Search ...">
@@ -150,12 +181,19 @@
 
 <script src="{!! asset('/admin/bower_components/datatables.net/js/jquery.dataTables.min.js') !!}"></script>
 <script src="{!! asset('/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') !!}"></script>
+<script src="{{ asset('admin/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+
 <script type="text/javascript">
     var mytable = $('#dataTable').DataTable({
         sDom : 'lrtip',
         "info" : false,
         "lengthChange" : false,
         "scrollX" : true,
+    })
+
+    $('.date').datepicker({
+        autoclose: true,
+        format: 'dd-mm-yyyy',
     })
     
     

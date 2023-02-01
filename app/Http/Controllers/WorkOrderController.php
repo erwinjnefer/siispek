@@ -30,17 +30,27 @@ class WorkOrderController extends Controller
         $unit = Unit::all();
         $create_wp = 'NO';
 
+        $date = $r->has('date') ? $r->date : null;
+        if($date != null){
+            $d1 = date('Y-m-d', strtotime($r->date));
+            $d2 = date('Y-m-d', strtotime($d1." +30 days"));
+
+        }else{
+            $d2 = date('Y-m-d', strtotime('+10 days'));
+            $d1 = date('Y-m-d', strtotime($d2." -30 days"));
+        }
+
         if($u->status == 'Admin'|| (Auth::user()->status == 'Manajer' && Auth::user()->usersUnit->unit->nama == 'UP2K')){
-            $wo = WorkOrder::orderBy('id','desc')->get();
+            $wo = WorkOrder::where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
-            $wo = WorkOrder::where('users_id', $u->id)->orderBy('id','desc')->get();
+            $wo = WorkOrder::where('users_id', $u->id)->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
 
             $cek_swa = Inspeksi::where('status','SWA')->get();
             $create_wp = ($cek_swa->count() > 0) ? 'NO' : 'YES';
         }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && $u->usersUnit != null ){
-            $wo = WorkOrder::where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+            $wo = WorkOrder::where('unit_id', $u->usersUnit->unit_id)->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }
-        return view('work-order.view', compact('wo','user','unit','create_wp'));
+        return view('work-order.view', compact('wo','user','unit','create_wp','d1','d2'));
     }
 
     public function logsHistory(Request $r)
@@ -63,7 +73,7 @@ class WorkOrderController extends Controller
                 $wo->file = 'file/' . date('YmdHis') . '-' . $file->getClientOriginalName();
             }
             $wo->users_id = $r->vendor_id;
-            $wo->unit_id = (Auth::user()->status == 'Admin' || (Auth::user()->status == 'Manajer' && Auth::user()->usersUnit->unit->nama == 'UP2K')) ? $r->unit_id : Auth::user()->usersUnit->unit_id;
+            $wo->unit_id = $r->unit_id;
             $wo->spk_no = $r->spk_no;
             $wo->tgl_mulai = date('Y-m-d', strtotime($r->tgl_mulai));
             $wo->tgl_selesai = date('Y-m-d', strtotime($r->tgl_selesai));

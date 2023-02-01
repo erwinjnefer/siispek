@@ -44,8 +44,8 @@ class HomeController extends Controller
         // ->where('tgl_selesai','>=', $date)
         $resume = [];
         if(Auth::user()->status == 'Vendor'){
-            $data['wp'] = WorkPermit::where('users_id', Auth::id())->get();
-            $resume = VResume::where('users_id', Auth::id())->get();
+            $data['wp'] = WorkPermit::where('users_id', Auth::id())->orderBy('id','desc')->get();
+            $resume = VResume::where('users_id', Auth::id())->orderBy('id','desc')->get();
             $wp_done = VResume::where('users_id', Auth::id())->where('man_app', '!=', NULL)->count();
             $inspeksi_done = VResume::where('users_id', Auth::id())->where('inspeksi_id', '!=', NULL)->count();
             $swa_status = VResume::where('users_id', Auth::id())->where('inspeksi_status', 'SWA')->count();
@@ -73,10 +73,10 @@ class HomeController extends Controller
             
 
         }elseif(Auth::user()->status == 'Admin'){
-            $data['wp'] = WorkPermit::all();
+            $data['wp'] = WorkPermit::orderBy('id','desc')->get();
             $data['unit'] = Unit::all();
 
-            $resume = VResume::get();
+            $resume = VResume::orderBy('id','desc')->get();
 
             $wp_done = VResume::where('man_app', '!=', NULL)->count();
             $inspeksi_done = VResume::where('inspeksi_id', '!=', NULL)->count();
@@ -104,10 +104,10 @@ class HomeController extends Controller
             
 
         }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && Auth::user()->usersUnit != null ){
-            $data['wp'] = WorkPermit::where('unit_id', Auth::user()->usersUnit->unit_id)->get();
+            $data['wp'] = WorkPermit::where('unit_id', Auth::user()->usersUnit->unit_id)->orderBy('id','desc')->get();
             $data['unit'] = Unit::all();
 
-            $resume = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->get();
+            $resume = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->orderBy('id','desc')->get();
             $wp_done = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('man_app', '!=', NULL)->count();
             $inspeksi_done = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_id', '!=', NULL)->count();
             $swa_status = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_status', 'SWA')->count();

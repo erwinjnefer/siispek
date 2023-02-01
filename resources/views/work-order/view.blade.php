@@ -7,7 +7,7 @@
 <section class="content-header">
     <h1>
         Work Order
-        <small>List</small>
+        <small>30 Hari sejak tanggal {{ date('d-m-Y', strtotime($d1)) }}</small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="{!! url('home') !!}"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -193,19 +193,53 @@
     </div>
 </div>
 
+<div class="modal fade" id="filter-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_filter" method="get" action="{{ url('work-order') }}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Filter 30 Hari Sejak Tanggal</h4>
+                </div>
+                <div class="modal-body">
+                    @csrf
+                    
+                    
+                    <div class="form-group">
+                        <input type="text" required readonly name="date" class="form-control date">
+                    </div>
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="box">
             <div class="box-body">
                 <div class="row">
                     @if(Auth::user()->status != 'Vendor')
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <button class="btn btn-primary form-control" data-toggle="modal" data-target="#create-modal" title="Create Work Order"><i class="fa fa-pencil"></i> CREATE WORK ORDER</button>
-                        </div>
+                    <div class="col-md-4">
+                        
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#create-modal" title="Create Work Order"><i class="fa fa-pencil"></i> CREATE WORK ORDER</button>
+                            <button class="btn btn-warning" data-toggle="modal" data-target="#filter-modal" title="Filter Tanggal"><i class="fa fa-calendar"></i> FILTER TANGGAL</button>
+
                     </div>
                     @endif
-                    <div class="col-md-10">
+                    {{-- <div class="col-md-2">
+                        <div class="form-group">
+                        </div>
+                    </div> --}}
+                    <div class="col-md-8">
                         
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-search"></i></span>

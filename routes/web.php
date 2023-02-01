@@ -20,11 +20,11 @@ Route::get('/', function () {
     return redirect('login');
 });
 
-Route::get('/', function () {
-    $ins_lanjut = InspeksiLanjut::all();
+// Route::get('/', function () {
+//     $ins_lanjut = InspeksiLanjut::all();
     
-    return 'done';
-});
+//     return 'done';
+// });
 
 Route::get('/wa', function () {
     event(new Whatsapp('6282359250040', '😁 Halo Terimakasih 🙏'));
@@ -158,6 +158,11 @@ Route::get('video', 'VideoController@index');
 Route::post('video/create', 'VideoController@create');
 Route::post('video/update', 'VideoController@update');
 Route::get('video/delete', 'VideoController@delete');
+
+Route::get('apk-update', 'ApkUpdateController@index');
+Route::post('apk-update/create', 'ApkUpdateController@create');
+Route::post('apk-update/update', 'ApkUpdateController@update');
+Route::get('apk-update/delete', 'ApkUpdateController@delete');
 
 
 

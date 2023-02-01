@@ -64,22 +64,25 @@ class WorkPermitController extends Controller
     
     public function view(Request $r)
     {
-        $date = $r->has('date') ? $r->date : date('Y-m-d');
+        $date = $r->has('date') ? $r->date : null;
+        if($date != null){
+            $d1 = date('Y-m-d', strtotime($r->date));
+            $d2 = date('Y-m-d', strtotime($d1." +30 days"));
 
-//         where('tgl_selesai','>=', $date)->
-// where('tgl_selesai','>=', $date)->
-// where('tgl_selesai','>=', $date)->
-
+        }else{
+            $d2 = date('Y-m-d', strtotime('+10 days'));
+            $d1 = date('Y-m-d', strtotime($d2." -30 days"));
+        }
         $u = Auth::user();
         $wp = [];
         if($u->status == 'Admin'){
-            $wp = WorkPermit::orderBy('id','desc')->get();
+            $wp = WorkPermit::where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
-            $wp = WorkPermit::where('users_id', $u->id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::where('users_id', $u->id)->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && $u->usersUnit != null ){
-            $wp = WorkPermit::where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::where('unit_id', $u->usersUnit->unit_id)->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }
-        return view('wp.view', compact('wp'));
+        return view('wp.view', compact('wp','d1'));
     }
     
     
@@ -105,10 +108,10 @@ class WorkPermitController extends Controller
     }
 
     public function repair(Request $r){
-        $wo = WorkOrder::all();
+        $wp = WorkPermit::all();
         $list = [];
-        foreach ($wo as $w) {
-            if($w->woWp != null){
+        foreach ($wp as $w) {
+            if($w->woWp == null){
                 array_push($list, $w);
                 // $w->tgl_mulai = $w->woWp->workPermit->tgl_mulai;
                 // $w->tgl_selesai = $w->woWp->workPermit->tgl_selesai;

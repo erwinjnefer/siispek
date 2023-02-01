@@ -20,14 +20,23 @@ class WorkPermitController extends Controller
     {
 
         $u = User::find($r->users_id);
+        $date = $r->date;
+        if($date != null){
+            $d1 = date('Y-m-d', strtotime($r->date));
+            $d2 = date('Y-m-d', strtotime($d1." +30 days"));
+
+        }else{
+            $d2 = date('Y-m-d', strtotime('+10 days'));
+            $d1 = date('Y-m-d', strtotime($d2." -30 days"));
+        }
         
         $wp = [];
         if($u->status == 'Admin'){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('users_id', $u->id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('users_id', $u->id)->orderBy('id','desc')->get();
         }elseif( ($u->level == 4 ||$u->level == 3 ||$u->level == 2) && $u->usersUnit != null ){
-            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+            $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
         }
         return compact('wp');
     }

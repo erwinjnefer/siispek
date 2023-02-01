@@ -201,6 +201,14 @@
                                 </a>
                             </li>
                             @endif
+
+                            @if(Auth::user()->status == 'Admin')
+                            <li>
+                                <a href="{!! url('apk-update') !!}">
+                                    <i class="fa fa-cloud-upload text-info"></i> <span>Apk Update</span>
+                                </a>
+                            </li>
+                            @endif
                             
                             
                             @if (Auth::user()->status == 'Admin')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\ApkUpdate;
 use App\Http\Controllers\Controller;
 use App\Logs;
 use App\LogsSwa;
@@ -24,11 +25,11 @@ class WorkOrderController extends Controller
     public function loadChart(Request $r)
     {
         if(Auth::user()->status == 'Vendor'){
-            $data['wp'] = WorkPermit::where('users_id', Auth::id())->get();
-            $resume = VResume::where('users_id', Auth::id())->get();
-            $wp_done = VResume::where('users_id', Auth::id())->where('man_app', '!=', NULL)->count();
-            $inspeksi_done = VResume::where('users_id', Auth::id())->where('inspeksi_id', '!=', NULL)->count();
-            $swa_status = VResume::where('users_id', Auth::id())->where('inspeksi_status', 'SWA')->count();
+            $data['wp'] = WorkPermit::where('tgl_mulai','like',"%".date('Y')."%")->where('users_id', Auth::id())->get();
+            $resume = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('users_id', Auth::id())->get();
+            $wp_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('users_id', Auth::id())->where('man_app', '!=', NULL)->count();
+            $inspeksi_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('users_id', Auth::id())->where('inspeksi_id', '!=', NULL)->count();
+            $swa_status = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('users_id', Auth::id())->where('inspeksi_status', 'SWA')->count();
             $data_chart = array(
                 ['cat' => 'WP', 'value' => $wp_done,'color' => '#54B435'],
                 ['cat' => 'INSPEKSI', 'value' => $inspeksi_done,'color' => '#F49D1A'],
@@ -53,14 +54,14 @@ class WorkOrderController extends Controller
             // $data['vendor'] = User::where('status','Vendor')->get();
             $data['unit'] = Unit::all();  
         }elseif(Auth::user()->status == 'Admin'){
-            $data['wp'] = WorkPermit::all();
+            $data['wp'] = WorkPermit::where('tgl_mulai','like',"%".date('Y')."%")->get();
             $data['unit'] = Unit::all();
 
-            $resume = VResume::get();
+            $resume = VResume::where('tgl_mulai','like',"%".date('Y')."%")->get();
 
-            $wp_done = VResume::where('man_app', '!=', NULL)->count();
-            $inspeksi_done = VResume::where('inspeksi_id', '!=', NULL)->count();
-            $swa_status = VResume::where('inspeksi_status', 'SWA')->count();
+            $wp_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('man_app', '!=', NULL)->count();
+            $inspeksi_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('inspeksi_id', '!=', NULL)->count();
+            $swa_status = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('inspeksi_status', 'SWA')->count();
 
             $data_chart = array(
                 ['cat' => 'WP', 'value' => $wp_done,'color' => '#54B435'],
@@ -88,13 +89,13 @@ class WorkOrderController extends Controller
             
 
         }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && Auth::user()->usersUnit != null ){
-            $data['wp'] = WorkPermit::where('unit_id', Auth::user()->usersUnit->unit_id)->get();
+            $data['wp'] = WorkPermit::where('tgl_mulai','like',"%".date('Y')."%")->where('unit_id', Auth::user()->usersUnit->unit_id)->get();
             $data['unit'] = Unit::all();
 
-            $resume = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->get();
-            $wp_done = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('man_app', '!=', NULL)->count();
-            $inspeksi_done = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_id', '!=', NULL)->count();
-            $swa_status = VResume::where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_status', 'SWA')->count();
+            $resume = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('unit_id', Auth::user()->usersUnit->unit_id)->get();
+            $wp_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('unit_id', Auth::user()->usersUnit->unit_id)->where('man_app', '!=', NULL)->count();
+            $inspeksi_done = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_id', '!=', NULL)->count();
+            $swa_status = VResume::where('tgl_mulai','like',"%".date('Y')."%")->where('unit_id', Auth::user()->usersUnit->unit_id)->where('inspeksi_status', 'SWA')->count();
 
             $data_chart = array(
                 ['cat' => 'WP', 'value' => $wp_done,'color' => '#54B435'],
@@ -120,7 +121,9 @@ class WorkOrderController extends Controller
             
         }
 
-        return compact('resume','data_chart','swa');
+        $apk_update = ApkUpdate::first();
+
+        return compact('resume','data_chart','swa','apk_update');
     }
 
     function view(Request $r)
@@ -129,14 +132,25 @@ class WorkOrderController extends Controller
         $unit = Unit::all();
         $u = Auth::user();
         $wo = [];
-        if($u->status == 'Admin'){
-            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->orderBy('id','desc')->get();
-        }elseif($u->status == 'Vendor'){
-            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('users_id', $u->id)->orderBy('id','desc')->get();
-        }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && $u->usersUnit != null ){
-            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+
+        $date = $r->date;
+        if($date != null){
+            $d1 = date('Y-m-d', strtotime($r->date));
+            $d2 = date('Y-m-d', strtotime($d1." +30 days"));
+
         }else{
-            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('users_id', Auth::id())->orWhere('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+            $d2 = date('Y-m-d', strtotime('+10 days'));
+            $d1 = date('Y-m-d', strtotime($d2." -30 days"));
+        }
+
+        if($u->status == 'Admin'){
+            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
+        }elseif($u->status == 'Vendor'){
+            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('users_id', $u->id)->orderBy('id','desc')->get();
+        }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && $u->usersUnit != null ){
+            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
+        }else{
+            $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('users_id', Auth::id())->orWhere('unit_id', $u->usersUnit->unit_id)->orderBy('id','desc')->get();
         }
 
         return compact('wo','vendor','unit');
@@ -158,6 +172,8 @@ class WorkOrderController extends Controller
             $wo->users_id = $r->vendor_id;
             $wo->unit_id = $r->unit_id;
             $wo->spk_no = $r->spk_no;
+            $wo->tgl_mulai = date('Y-m-d', strtotime($r->tgl_mulai));
+            $wo->tgl_selesai = date('Y-m-d', strtotime($r->tgl_selesai));
             $wo->progress = 'Create WO';
             $wo->save();
 

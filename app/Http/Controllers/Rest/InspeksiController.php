@@ -35,20 +35,51 @@ class InspeksiController extends Controller
     
     public function view(Request $r){
         $pegawai = Pegawai::find($r->pegawai_id);
-        $wp = WorkPermit::with('wpApproval')->with('woWp')
-        ->with('workPermitPP.pegawai')
-        ->with('workPermitPPK3.pegawai')
-        ->with('unit')
-        ->with('workPermitHirarc.hirarc')
-        ->with('workPermitProsedurKerja.prosedurKerja')
-        ->with('jsa')
-        ->with('inspeksi')
-        ->with('users')
-        ->where('users_id', $pegawai->users_id)
-        ->orderBy('id','desc')
-        ->get();
+        $date = $r->date;
+
+        if($date != null){
+            $d1 = date('Y-m-d', strtotime($r->date));
+            $d2 = date('Y-m-d', strtotime($d1." +30 days"));
+
+            $wp = WorkPermit::with('wpApproval')->with('woWp')
+            ->with('workPermitPP.pegawai')
+            ->with('workPermitPPK3.pegawai')
+            ->with('unit')
+            ->with('workPermitHirarc.hirarc')
+            ->with('workPermitProsedurKerja.prosedurKerja')
+            ->with('jsa')
+            ->with('inspeksi')
+            ->with('users')
+            ->where('tgl_mulai','>=', $d1)
+            ->where('tgl_mulai','<=', $d2)
+            ->where('users_id', $pegawai->users_id)
+            ->orderBy('id','desc')
+            ->get();
+
+        }else{
+
+            $d2 = date('Y-m-d');
+            $d1 = date('Y-m-d', strtotime($d2." -30 days"));
+
+            $wp = WorkPermit::with('wpApproval')->with('woWp')
+            ->with('workPermitPP.pegawai')
+            ->with('workPermitPPK3.pegawai')
+            ->with('unit')
+            ->with('workPermitHirarc.hirarc')
+            ->with('workPermitProsedurKerja.prosedurKerja')
+            ->with('jsa')
+            ->with('inspeksi')
+            ->with('users')
+            ->where('tgl_mulai','>=', $d1)
+            ->where('tgl_mulai','<=', $d2)
+            ->where('users_id', $pegawai->users_id)
+            ->orderBy('id','desc')
+            ->get();
+        }
+
+        $date = date('d-m-Y', strtotime($d1)).' - '.date('d-m-Y', strtotime($d2));
         
-        return compact('wp');
+        return compact('wp','date');
     }
     
     public function detail(Request $r){
@@ -75,6 +106,8 @@ class InspeksiController extends Controller
         
         
         $data['video'] = Video::inRandomOrder()->first();
+
+        
         
         return $data;
     }
@@ -88,6 +121,8 @@ class InspeksiController extends Controller
             
             $inspeksi = Inspeksi::find($r->inspeksi_id);
             $wp = WorkPermit::find($inspeksi->work_permit_id);
+
+            $foto = $r->file('foto');
             
             $im = new InspeksiMandiri();
             $im->tgl_inspeksi = date('Y-m-d');
@@ -105,7 +140,14 @@ class InspeksiController extends Controller
             $im->jsa = $r->jsa;
             $im->sop = $r->sop;
             $im->wp = $r->wp;
+            $im->koordinat = $r->koordinat;
+            if($foto != null){
+                $im->foto = 'file/'.date('YmdHis').'-'.$foto->getClientOriginalName();
+            }
             $im->save();
+            if($foto != null){
+                $foto->move('file', $im->foto);
+            }
             
             $logs = new Logs();
             $logs->date = date('Y-m-d H:i:s');
