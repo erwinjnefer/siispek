@@ -33,10 +33,12 @@ class SosialisasiController extends Controller
 
             $s = new Sosialisasi();
             $s->date = date('Y-m-d', strtotime($r->date));
+            $s->kategori = $r->kategori;
             $s->judul = $r->judul;
             $s->lokasi = $r->lokasi;
             $s->koordinat = $r->koordinat;
             $s->pemilik = $r->pemilik;
+            $s->id_pel_no_tiang = $r->id_pel_no_tiang;
             $s->users_id = Auth::id();
             $s->save();
 

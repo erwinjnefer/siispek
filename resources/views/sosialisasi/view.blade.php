@@ -41,6 +41,13 @@
                             <label for="">Tanggal</label>
                             <input type="text" readonly name="date" class="form-control" id="date" required/>
                         </div>
+                        <div class="form-group">
+                            <label for="">Kategori</label>
+                            <select name="kategori" class="form-control" required>
+                                <option>Forum</option>
+                                <option>Personal</option>
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             <label for="">Judul</label>
@@ -53,7 +60,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="">Coordinate</label>
+                            <label for="">Coordinate Format (Lat , Long) <b class="text-danger"> Cth : -8.5773565 , 116.0815247</b></label>
                             <div class="row">
                                 <div class="col-md-6">
                                     <input type="text" class="form-control" id="koordinat" name="koordinat" required>
@@ -68,6 +75,13 @@
                             <label for="">Pemilik</label>
                             <input type="text" name="pemilik" class="form-control" required/>
                         </div>
+
+                        <div class="form-group">
+                            <label for="">Id Pel / Nomor Tiang</label>
+                            <input type="text" name="id_pel_no_tiang" class="form-control"/>
+                        </div>
+
+
                         
                     </div>
                     <div class="modal-footer">
@@ -106,10 +120,11 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Date</th>
+                                    <th>Kategori</th>
                                     <th>Judul Sosialisasi</th>
                                     <th>Lokasi</th>
                                     <th>Pemilik</th>
-                                    {{-- <th>Foto Lampiran</th> --}}
+                                    <th>ID Pel / Nomor Tiang</th>
                                     <th>User</th>
                                 </tr>
                             </thead>
@@ -121,12 +136,14 @@
                                 <tr>
                                     <td data-id="{!! $s->id !!}" width="1%">{!! $no ++ !!}</td>
                                     <td width="5%">{!! date('d-m-Y', strtotime($s->date)) !!}</td>
+                                    <td width="10%">{!! $s->kategori !!}</td>
                                     <td width="10%">{!! $s->judul !!}</td>
                                     <td width="20%">
                                         <a href="{{ url('sosialisasi/detail?id='.$s->id) }}">{!! str_replace("\n","<br>", $s->lokasi)  !!}</a><br>
                                         <a href="{{ url('sosialisasi/sos-map?id='.$s->id) }}" target="_blank"><span class="badge bg-blue"><i class="fa fa-map"></i> {{ $s->koordinat }}</span></a>
                                     </td>
                                     <td width="5%">{!! $s->pemilik !!}</td>
+                                    <td width="5%">{!! $s->id_pel_no_tiang !!}</td>
                                     {{-- <td width="5%"></td> --}}
                                     <td width="5%">{{ $s->users->name }}</td>
                                 </tr>

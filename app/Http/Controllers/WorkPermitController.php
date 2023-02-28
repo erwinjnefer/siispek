@@ -6,6 +6,7 @@ use App\Logs;
 use App\Pegawai;
 use App\PengawasManuver;
 use App\Providers\Whatsapp;
+use App\Providers\WhatsappSch;
 use App\Unit;
 use App\User;
 use App\WorkOrder;
@@ -169,10 +170,7 @@ class WorkPermitController extends Controller
             $wp->jenis_pekerjaan = $r->jenis_pekerjaan;
             $wp->detail_pekerjaan = $r->detail_pekerjaan;
             $wp->lokasi_pekerjaan = $r->lokasi_pekerjaan;
-            // $wp->pengawas_pekerjaan = $r->pengawas_pekerjaan;
-            // $wp->no_telp_pengawas = $r->no_telp_pengawas;
-            // $wp->pengawas_k3 = $r->pengawas_k3;
-            // $wp->no_telp_k3 = $r->no_telp_k3;
+            $wp->tgl_rencana_pelaksanaan = date('Y-m-d', strtotime($r->tgl_rencana_pelaksanaan));
             $wp->tgl_mulai = date('Y-m-d', strtotime($r->tgl_mulai));
             $wp->tgl_selesai = date('Y-m-d', strtotime($r->tgl_selesai));
             $wp->jam_mulai = $r->jam_mulai;
@@ -220,10 +218,10 @@ class WorkPermitController extends Controller
             $wp_pp->pegawai_id = $r->pp_id;
             $wp_pp->save();
             
-            $wp_pp = new WorkPermitPPK3();
-            $wp_pp->work_permit_id = $wp->id;
-            $wp_pp->pegawai_id = $r->pp_k3_id;
-            $wp_pp->save();
+            $wp_ppk3 = new WorkPermitPPK3();
+            $wp_ppk3->work_permit_id = $wp->id;
+            $wp_ppk3->pegawai_id = $r->pp_k3_id;
+            $wp_ppk3->save();
             
             $wp_pm = new PengawasManuver();
             $wp_pm->work_permit_id = $wp->id;
@@ -247,8 +245,19 @@ class WorkPermitController extends Controller
             $logs->users = Auth::user()->name;
             $logs->work_order_id = $r->work_order_id;
             $logs->save();
+
+            $ud = User::where('level', 2)->whereHas('usersUnit', function($q)use($wp){
+                return $q->where('unit_id', $wp->unit_id);
+            })->first();
+
+            $sch_pl = date('Y-m-d', strtotime($wp->tgl_rencana_pelaksanaan." -2 days"));
+
+            $text = "SIISPEK Warning !\n\nRencana pelaksanaan perkerjaan (*$wp->detail_pekerjaan*) 2 hr lagi ..agar d pastikan dokumen WP dan JSA sudah tersedia dan divalidasi";
+            event(new WhatsappSch($wp->users->no_wa, $text, $sch_pl.' 07:00:00'));
+            event(new WhatsappSch($wp_ppk3->pegawai->no_wa, $text, $sch_pl.' 07:00:00'));
+            event(new WhatsappSch($ud->no_wa, $text, $sch_pl.' 07:00:00'));
+
             
-         
             DB::commit();
             return 'success';
         } catch (\Throwable $th) {

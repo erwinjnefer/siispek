@@ -21,6 +21,9 @@ class EventServiceProvider extends ServiceProvider
 
         Whatsapp::class => [
             SendWhatsappNotification::class,
+        ],
+        WhatsappSch::class => [
+            SendWhatsappSchNotification::class,
         ]
     ];
 

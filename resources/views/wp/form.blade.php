@@ -269,7 +269,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Tgl. Mulai</label>
-                                <input type="text" class="form-control" autocomplete="off" id="tgl_mulai" placeholder="" name="tgl_mulai">
+                                <input type="text" class="form-control" autocomplete="off" id="tgl_mulai" placeholder="" name="tgl_mulai" value="{{ date('d-m-Y', strtotime($wo->tgl_mulai)) }}">
                             </div>
                         </div>
                         
@@ -284,7 +284,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Tgl. Selesai</label>
-                                <input type="text" class="form-control" autocomplete="off" id="tgl_selesai" placeholder="" name="tgl_selesai">
+                                <input type="text" class="form-control" autocomplete="off" id="tgl_selesai" placeholder="" name="tgl_selesai" value="{{ date('d-m-Y', strtotime($wo->tgl_selesai)) }}">
                             </div>
                         </div>
                         
@@ -294,6 +294,11 @@
                                 <input type="text" class="form-control" placeholder="" name="jam_selesai">
                             </div>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Tgl. Rencana Pelaksanaan Pekerjaan</label>
+                        <input type="text" class="form-control" autocomplete="off" id="tgl_rencana_pelaksanaan" placeholder="" name="tgl_rencana_pelaksanaan" required>
                     </div>
                 </div>
             </div>
@@ -541,7 +546,7 @@
 
 
 
-    $('#datepicker,#tgl_mulai,#tgl_selesai').datepicker({
+    $('#datepicker,#tgl_mulai,#tgl_selesai,#tgl_rencana_pelaksanaan').datepicker({
         autoclose: true,
         format: 'dd-mm-yyyy',
     })
@@ -679,6 +684,7 @@
     
     $('#form_wp').on('submit', function (e) {
         e.preventDefault()
+        showPleaseWait()
         $.ajax({
             type: 'post',
             url: "{!! url('work-permit/create') !!}",
@@ -688,6 +694,7 @@
             processData: false,
             success: function (r) {
                 console.log(r)
+                hidePleaseWait()
                 if (r == 'success') {
                     Swal.fire(
                     'Yeaa !',

@@ -52,6 +52,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('sosialisasi/detail','API\SosialisasiController@detail');
     Route::post('sosialisasi/create','API\SosialisasiController@create');
     Route::post('sosialisasi/upload-foto', 'API\SosialisasiController@uploadFoto');
+    
+    Route::get('inspeksi-peralatan','API\InspeksiPeralatan@view');
+    Route::post('inspeksi-peralatan/create','API\InspeksiPeralatan@create');
 
 });
 
