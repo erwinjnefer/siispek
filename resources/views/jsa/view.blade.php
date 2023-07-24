@@ -81,7 +81,6 @@
 
 
 <div class="row">
-        
         <div class="col-md-12">
 
             @if($jsa->review == 'JSA telah di review dan disetujui')
@@ -98,7 +97,6 @@
             </div>
 
             <div class="row">
-                
                 <div class="col-md-2">
                     <button class="btn btn-danger form-control btn-reset-jsa" data-id="{{ $jsa->id }}"><i class="fa fa-refresh"></i> RESET JSA</button>
                 </div>
@@ -160,8 +158,24 @@
                     
                 </div>
             </div>
+
+            @if($jsa->workPermit->kategori == 'inspekta')
+            <div class="callout callout-success">
+                <h4>URL Inspekta</h4>
+                <p><a target="_blank" href="{!! $wp->url !!}">{{ $wp->url }}</a></p>
+            </div>
+            @endif
+
+
+            @if($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file != null)
+            <div class="callout callout-info">
+                <h4>File WP & JSA Inspekta</h4>
+                <p><a target="_blank" href="{!! url($wp->wp_file) !!}">{{ $wp->wp_file }}</a></p>
+            </div>
+            @endif
         </div>
-        
+
+        @if($jsa->workPermit->kategori == 'form')
         <div class="col-md-12">
             
             <div class="box box-default">
@@ -697,12 +711,17 @@
                 </div>
             </div>
         </div>
+        @endif
         
         <div class="col-md-12">
-            @if(Auth::user()->level == 2)
+            {{-- @if($wp->kategori == 'inspekta')
+            <a class="btn btn-warning btn-verifikasi" href="#">Verifikasi Inspekta</a>
+            @endif --}}
+
+            @if(Auth::user()->level == 2 && $wp->jsa_rev == 0 && $wp->kategori == 'form')
             <a class="btn btn-success" href="#" data-toggle="modal" data-target="#review-modal" class="btn btn-primary">REVIEW</a>
             @endif
-            <a class="btn btn-warning" target="_blank" href="{{ url('jsa/preview?id='.$jsa->id) }}" class="btn btn-primary">PDF</a>
+            <a class="btn btn-danger" target="_blank" href="{{ url('jsa/preview?id='.$jsa->id) }}" class="btn btn-primary">PDF</a>
             <a class="btn btn-primary" href="{{ url('work-permit/detail?id='.$wp->id) }}" class="btn btn-primary">KEMBALI</a>
         </div>
         
@@ -717,6 +736,26 @@
     
     $(document).on('click','.btn-save', function(){
         $('#form_jsa_add').submit()
+    })
+
+    $(document).on('click','.btn-verifikasi', function(e){
+        e.preventDefault()
+        Swal.fire({
+            title: 'Warning',
+            text: "Lakukan verifikasi INSPEKTA dan lanjutkan review JSA di SIISPEK",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ok !'
+        }).then((result) => {
+            if (result.value) {
+                let params = `scrollbars=yes,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1000,height=1000,left=100,top=100`;
+                open("{{ $wp->url }}", 'Inspekta', params);
+                
+            }
+        })
+
     })
 
     $('#form_upload_analisis').on('submit', function (e) {

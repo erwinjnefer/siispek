@@ -568,8 +568,12 @@
             <div class="box-footer">
                 Lampiran :
                 <br>
+                @if($wp->kategori == 'form')
                 <a href="{!! url('work-permit/print?id='.$wp->id) !!}" target="_blank"><span class="badge bg-aqua">Work Permit</span></a>
                 <a href="{!! url('jsa/preview?id='.$wp->jsa->id) !!}" target="_blank"><span class="badge bg-aqua">File JSA</span></a>
+                @else
+                <a href="{!! url($wp->wp_file) !!}" target="_blank"><span class="badge bg-aqua">File Work Permit & JSA</span></a>
+                @endif
                 <a href="{!! url($wp->workPermitProsedurKerja->prosedurKerja->file) !!}" target="_blank"><span class="badge bg-aqua">File SOP</span></a>
             </div>
         </div>

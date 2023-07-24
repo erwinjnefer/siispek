@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jsa;
+use App\JsaPegawai;
 use App\Logs;
 use App\Pegawai;
 use App\PengawasManuver;
@@ -138,7 +140,13 @@ class WorkPermitController extends Controller
 
         $pk3 = Pegawai::where('users_id', Auth::id())->where('jabatan','Pengawas K3')->get();
         $pp = Pegawai::where('users_id', Auth::id())->where('jabatan','Pengawas Pekerjaan')->get();
-        return view('wp.form', compact('unit','pengawas_manuver','pk3','pp','wo'));
+        $pel = Pegawai::where('users_id', Auth::id())->where('jabatan','Pelaksana Pekerjaan')->get();
+
+        if($r->form == 'inspekta'){
+            return view('wp.hsse-form', compact('unit','pengawas_manuver','pk3','pp','wo','pel'));
+        }else{
+            return view('wp.form', compact('unit','pengawas_manuver','pk3','pp','wo'));
+        }
     }
     
     public function formEdit(Request $r){
@@ -266,6 +274,126 @@ class WorkPermitController extends Controller
         }
     }
 
+    public function createInspekta(Request $r){
+        // return $r->all();
+        DB::beginTransaction();
+        try {
+            $u_id = $r->unit_id;
+            $lv3_check = User::where('bidang', $r->bidang)->where('level', 3)->whereHas('usersUnit', function($q)use($u_id){
+                return $q->where('unit_id', $u_id);
+            })->first();
+
+            // return $lv3_check;
+            
+            $wp = new WorkPermit();
+            $wp->bidang = $r->bidang;
+            $wp->lv3_id = ($lv3_check != null) ? $lv3_check->id : 0;
+            $wp->tgl_pengajuan = date('Y-m-d', strtotime($r->tgl_pengajuan));
+            $wp->spp_no = $r->spp_no;
+            $wp->jenis_pekerjaan = $r->jenis_pekerjaan;
+            $wp->detail_pekerjaan = $r->detail_pekerjaan;
+            $wp->lokasi_pekerjaan = $r->lokasi_pekerjaan;
+            $wp->tgl_rencana_pelaksanaan = date('Y-m-d', strtotime($r->tgl_rencana_pelaksanaan));
+            $wp->tgl_mulai = date('Y-m-d', strtotime($r->tgl_mulai));
+            $wp->tgl_selesai = date('Y-m-d', strtotime($r->tgl_selesai));
+            $wp->jam_mulai = $r->jam_mulai;
+            $wp->jam_selesai = $r->jam_selesai;
+            $wp->kategori = 'inspekta';
+            $wp->jsa_rev = 1;
+            $wp->url = $r->url;
+            
+            $wp->unit_id = $r->unit_id;
+            $wp->users_id = Auth::id();
+            $wp->save();
+            
+            $wpApp = new WpApproval();
+            $wpApp->work_permit_id = $wp->id;
+            $wpApp->save();
+            
+            $wp_pp = new WorkPermitPP();
+            $wp_pp->work_permit_id = $wp->id;
+            $wp_pp->pegawai_id = $r->pp_id;
+            $wp_pp->save();
+            
+            $wp_ppk3 = new WorkPermitPPK3();
+            $wp_ppk3->work_permit_id = $wp->id;
+            $wp_ppk3->pegawai_id = $r->pp_k3_id;
+            $wp_ppk3->save();
+
+            $jsa = new Jsa();
+            $jsa->work_permit_id = $wp->id;
+            $jsa->save();
+
+            foreach ($r->pel_pek_id as $pp_id) {
+                $jsap = new JsaPegawai();
+                $jsap->jsa_id = $jsa->id;
+                $jsap->pegawai_id = $pp_id;
+                $jsap->save();
+            }
+            
+            $wp_pm = new PengawasManuver();
+            $wp_pm->work_permit_id = $wp->id;
+            $wp_pm->users_id = $r->pengawas_manuver_id;
+            $wp_pm->save();
+
+            $wo_wp = new WoWp();
+            $wo_wp->work_order_id = $r->work_order_id;
+            $wo_wp->work_permit_id = $wp->id;
+            $wo_wp->save();
+
+            $wo = WorkOrder::find($r->work_order_id);
+            $wo->tgl_mulai = $wp->tgl_mulai;
+            $wo->tgl_selesai = $wp->tgl_selesai;
+            $wo->progress = 'Create WP';
+            $wo->save();
+
+            $logs = new Logs();
+            $logs->date = date('Y-m-d H:i:s');
+            $logs->nama = "Create work permit";
+            $logs->users = Auth::user()->name;
+            $logs->work_order_id = $r->work_order_id;
+            $logs->save();
+
+            $ud = User::where('level', 2)->whereHas('usersUnit', function($q)use($wp){
+                return $q->where('unit_id', $wp->unit_id);
+            })->first();
+
+            $sch_pl = date('Y-m-d', strtotime($wp->tgl_rencana_pelaksanaan." -2 days"));
+
+            $text = "SIISPEK Warning !\n\nRencana pelaksanaan perkerjaan (*$wp->detail_pekerjaan*) 2 hr lagi ..agar d pastikan dokumen WP dan JSA sudah tersedia dan divalidasi";
+            event(new WhatsappSch($wp->users->no_wa, $text, $sch_pl.' 07:00:00'));
+            event(new WhatsappSch($wp_ppk3->pegawai->no_wa, $text, $sch_pl.' 07:00:00'));
+            event(new WhatsappSch($ud->no_wa, $text, $sch_pl.' 07:00:00'));
+
+            
+            DB::commit();
+            return 'success';
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $th->getMessage();
+        }
+    }
+
+    public function uploadWpFile(Request $r){
+        DB::beginTransaction();
+        try {
+
+            $file = $r->file('file');
+
+            $wp = WorkPermit::find($r->wp_id);
+            $wp->wp_file = 'file/' . date('YmdHis') . '-' . $file->getClientOriginalName();
+            $wp->save();
+
+            $file->move('file', $wp->wp_file);
+
+            DB::commit();
+            return 'success';
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $th->getMessage();
+        }
+    }
+
     public function updateBidang(Request $r){
         $wp = WorkPermit::find($r->id);
         $wp->bidang = $r->bidang;
@@ -311,7 +439,7 @@ class WorkPermitController extends Controller
                 "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
                 "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw atau http://sscpln.com/sbw/work-permit/detail?id=$wp->id Terimakasih";
 
                 $wo->progress = 'Submit WP';
 
@@ -326,7 +454,7 @@ class WorkPermitController extends Controller
                 "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
                 "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw atau http://sscpln.com/sbw/work-permit/detail?id=$wp->id Terimakasih";
 
                 $wo->progress = 'Re-Submit WP';
             }
@@ -377,7 +505,7 @@ class WorkPermitController extends Controller
             "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
             "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
             "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/sbw atau http://sscpln.com/sbw/work-permit/detail?id=$wp->id Terimakasih";
             
             if($ud != null && $ud->no_wa != null){
                 // $wa = new MBroker();
@@ -417,7 +545,7 @@ class WorkPermitController extends Controller
             "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
             "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
             "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
             
             if($ud != null && $ud->no_wa != null){
                 // $wa = new MBroker();
@@ -541,7 +669,7 @@ class WorkPermitController extends Controller
                 "\nJenis Pekerjaan : ".$wp->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw atau http://sscpln.com/sbw/work-permit/detail?id=$wp->id Terimakasih";
             
             if($r->kategori == 'man_app'){
                 if($wp->users->no_wa != null){
@@ -635,7 +763,7 @@ class WorkPermitController extends Controller
             "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
             "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
             "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/sbw atau http://sscpln.com/sbw/work-permit/detail?id=$wp->id Terimakasih";
 
             if($wp->users->no_wa != null){
                 event(new Whatsapp($wp->users->no_wa, $text));

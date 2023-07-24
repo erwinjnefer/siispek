@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\InspeksiPeralatan;
+use App\MapRef;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,12 @@ class InspeksiPeralatanController extends Controller
         }
 
         return compact('inspeksi');
+    }
+
+    public function loadGardu(Request $r)
+    {
+        $map_ref = MapRef::all();
+        return compact('map_ref');
     }
 
     public function create(Request $r)

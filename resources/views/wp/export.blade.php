@@ -48,7 +48,8 @@
         </table>
         <br>
 
-        <p style="text-align: center"><b><u>WORKING PERMIT</u></b><br><b style="font-size: 14px;">IJIN KERJA</b></p>
+        <p style="text-align: center"><b><u>WORKING PERMIT</u></b><br><b style="font-size: 14px;"><u>IJIN KERJA</u></b></p>
+        <p style="font-size: 10px;text-align: center">{{ 'WP.'.$wp->id }}</p>
         {{-- <br> --}}
         <table border="1" style="width: 100%">
             <tr>

@@ -82,6 +82,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="">Create WP</label>
+                        <select name="kategori" class="form-control" required>
+                            <option value="form">Form Non Inspekta</option>
+                            <option value="inspekta">Form Inspekta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="">File</label>
                         <input type="file" name="file" class="form-control">
                     </div>
@@ -227,14 +235,14 @@
         <div class="box">
             <div class="box-body">
                 <div class="row">
-                    @if(Auth::user()->status != 'Vendor')
                     <div class="col-md-4">
                         
+                        @if(Auth::user()->status != 'Vendor')
                             <button class="btn btn-primary" data-toggle="modal" data-target="#create-modal" title="Create Work Order"><i class="fa fa-pencil"></i> CREATE WORK ORDER</button>
+                        @endif
                             <button class="btn btn-warning" data-toggle="modal" data-target="#filter-modal" title="Filter Tanggal"><i class="fa fa-calendar"></i> FILTER TANGGAL</button>
 
                     </div>
-                    @endif
                     {{-- <div class="col-md-2">
                         <div class="form-group">
                         </div>
@@ -262,6 +270,7 @@
                                     <th>File</th>
                                     <th>Unit</th>
                                     <th>Work Permit</th>
+                                    <th>Form</th>
                                     <th style="text-align: center">Option</th>
                                 </tr>
                             </thead>
@@ -298,7 +307,11 @@
                                         @if(Auth::user()->status == 'Vendor')
                                         
                                         @if($create_wp == 'YES')
-                                        <a class="btn btn-warning" href="{{ url('work-permit/form?id='.$wo->id) }}">CREATE WORK PERMIT</a>
+                                        @if ($wo->kategori == 'inspekta')
+                                        <a class="btn btn-warning" href="{{ url('work-permit/form?id='.$wo->id.'&form=inspekta') }}">CREATE WORK PERMIT</a>
+                                        @else
+                                        <a class="btn btn-warning" href="{{ url('work-permit/form?id='.$wo->id.'&form=form') }}">CREATE WORK PERMIT</a>
+                                        @endif
                                         @else
                                         <span class="badge bg-yellow">Masih ada SWA yang belum terselesaikan</span>
                                         @endif
@@ -307,10 +320,17 @@
                                         
                                         @endif
                                     </td>
-                                    <td align="center" width="3%">
-                                        @if(Auth::user()->status != 'Vendor')
-                                        <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $wo->id }}">Delete</a>
+                                    <td width="3%">
+                                        @if ($wo->woWp != null && $wo->kategori == 'inspekta' && $wo->woWp->workPermit->url != null)
+                                            <a target="_blank" href="{{ $wo->woWp->workPermit->url }}">{{ $wo->kategori }}</a>
+                                        @else
+                                        {{ $wo->kategori }}
                                         @endif
+                                    </td>
+                                    <td align="center" width="3%">
+                                        {{-- @if(Auth::user()->status != 'Vendor')
+                                        <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $wo->id }}">Delete</a>
+                                        @endif --}}
                                     </td>
 
                                 </tr>

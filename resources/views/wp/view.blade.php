@@ -62,7 +62,7 @@
                             <option>Konstruksi</option>
                             <option>Jaringan</option>
                             <option>Pemasaran dan Pelayanan Pelanggan</option>
-                            <option>Transaksi Energi</option>
+                            <option>Transaksi Energi ULP</option>
                             <option>Perencanaan</option>
                             <option>Teknik</option>
                         </select>

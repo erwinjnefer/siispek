@@ -88,7 +88,7 @@ class InspeksiController extends Controller
                 "\nLokasi Pekerjaan : ".$sa->workPermit->lokasi_pekerjaan.
                 "\n\nStatus Review : ".$sa->review.
                 "\nCatatan Review : ".$sa->catatan_review.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
 
                 event(new Whatsapp($sa->workPermit->workPermitPPK3->pegawai->no_wa, $text));
             }
@@ -160,7 +160,7 @@ class InspeksiController extends Controller
                 "\nJenis Pekerjaan : ".$sa->workPermit->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$sa->workPermit->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$sa->workPermit->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
 
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -180,7 +180,7 @@ class InspeksiController extends Controller
                 "\nSaran/Rekomendasi Perbaikan : ".$inspeksi->saran_rekomendasi.
                 "\nTindakan Selanjutnya : ".$inspeksi->tindakan_selanjutnya.
                 
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
     
                 if($ud != null && $ud->no_wa != null){
                     event(new Whatsapp($ud->no_wa, $text));
@@ -225,7 +225,7 @@ class InspeksiController extends Controller
             $logs->work_order_id = $wo->id;
             $logs->save();
 
-            $msg = "Hi *".$inspeksi->workPermit->users->name."*,\nstatus operasi untuk pekerjaan \n*$wo->nama* telah dibuka \nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            $msg = "Hi *".$inspeksi->workPermit->users->name."*,\nstatus operasi untuk pekerjaan \n*$wo->nama* telah dibuka \nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
             event(new Whatsapp($wo->users->no_wa, $msg));
             DB::commit();
             return 'success';
@@ -311,7 +311,7 @@ class InspeksiController extends Controller
             "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
             
-            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
 
             if($inspeksi->workPermit->workPermitPPK3->pegawai->no_wa != null){
                 // $wa = new MBroker();
@@ -399,7 +399,7 @@ class InspeksiController extends Controller
             "\nDetail Pekerjaan : ".$inspeksi->workPermit->detail_pekerjaan.
             "\nLokasi Pekerjaan : ".$inspeksi->workPermit->lokasi_pekerjaan.
             
-            "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+            "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
 
             if($ud != null && $ud->no_wa != null){
                 $wa = new MBroker();

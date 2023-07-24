@@ -40,6 +40,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 //admin_template
 Route::get('/dashboard', 'HomeController@dashboard');
+Route::get('/broadcast', 'WATestController@broadcast');
 
 Route::get('work-order','WorkOrderController@view');
 Route::post('work-order/create','WorkOrderController@create');
@@ -60,10 +61,12 @@ Route::get('work-permit/resubmit','WorkPermitController@reSubmitWp');
 Route::get('work-permit/print','WorkPermitController@print');
 Route::get('work-permit/send-wa','WorkPermitController@sendWa');
 Route::post('work-permit/create','WorkPermitController@create');
+Route::post('work-permit/create-inspekta','WorkPermitController@createInspekta');
 Route::post('work-permit/update','WorkPermitController@update');
 Route::post('work-permit/approve','WorkPermitController@approve');
 Route::post('work-permit/reject','WorkPermitController@reject');
 Route::post('work-permit/update-bidang','WorkPermitController@updateBidang');
+Route::post('work-permit/upload-wp-file','WorkPermitController@uploadWpFile');
 
 Route::post('work-permit/hirarc-select','WorkPermitController@hirarcSelect');
 Route::post('work-permit/pk-select','WorkPermitController@pkSelect');

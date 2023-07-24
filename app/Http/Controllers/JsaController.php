@@ -242,7 +242,7 @@ class JsaController extends Controller
                 "\nTgl Pekerjaan : ".date('d-m-Y', strtotime($wp->tgl_pengajuan)).
                 "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     // $wa = new MBroker();
@@ -266,6 +266,7 @@ class JsaController extends Controller
         DB::beginTransaction();
         try {
             $jsa = Jsa::find($r->jsa_id);
+            
             $wp = WorkPermit::find($jsa->work_permit_id);
 
             $jsa->review = $r->review;
@@ -283,7 +284,7 @@ class JsaController extends Controller
             $logs->work_order_id = $jsa->workPermit->woWp->work_order_id;
             $logs->save();
 
-            $wo = WorkOrder::find($wp->id);
+            $wo = WorkOrder::find($wp->woWp->work_order_id);
             $wo->tgl_mulai = $wp->tgl_mulai;
             $wo->tgl_selesai = $wp->tgl_selesai;
             $wo->progress = $logs->nama;
@@ -295,7 +296,7 @@ class JsaController extends Controller
                 "\nTgl. Koreksi : ".date('d-m-Y').
                 "\nKoreksi : *".$jsa->note."*".
                 
-                "\n\nUntuk lebih detail kunjungi http://sscpln.com/wp Terimakasih";
+                "\n\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
     
                 if($jsa->workPermit->users->no_wa != null){
                     event(new Whatsapp($jsa->workPermit->users->no_wa, $text));

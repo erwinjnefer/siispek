@@ -291,6 +291,38 @@
         </div>
     </div>
 
+    <div class="modal fade" id="upload-wp-file-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form_upload_wp" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Upload WP & JSA Inspekta</h4>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="wp_id" value="{{ $wp->id }}">
+                        
+                        <div class="form-group">
+                            <label for="">File</label>
+                            <input type="file" class="form-control" name="file" accept=".pdf" required>
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary pull-left">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+  
+
     @if ($wp->reject == 1)
     <div class="col-md-12">
         <div class="callout callout-danger">
@@ -418,7 +450,7 @@
     </div>
     
     
-    
+    @if($wp->kategori == 'form')
     <div class="col-md-6">
         <div class="box">
             <div class="box-header">
@@ -616,11 +648,12 @@
             </div>
         </div>
     </div>
+    @endif
     
     <div class="col-md-6">
         <div class="box">
             <div class="box-header">
-                <h4>E. LAMPIRAN IZIN KERJA (WAJIB DILAMPIRKAN)</h4>
+                <h4>{{ ($wp->kategori == 'form') ? 'E. LAMPIRAN IZIN KERJA (WAJIB DILAMPIRKAN)' : 'C. LAMPIRAN IZIN KERJA (WAJIB DILAMPIRKAN)' }}</h4>
             </div>
             <div class="box-body">
                 <div class="col-md-6">
@@ -705,6 +738,30 @@
                 <button class="btn btn-success btn-send-wa" data-id="{{ $wp->id }}"><i class="fa fa-whatsapp-o"></i> Send Whatsapp</button>
             </div>
         </div>
+
+        {{-- @if($wp->kategori == 'inspekta')
+        <div class="callout callout-success">
+            <h4>URL Inspekta</h4>
+            <p><a target="_blank" href="{!! $wp->url !!}">{{ $wp->url }}</a></p>
+        </div>
+        @endif --}}
+
+
+        @if($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file == null && Auth::user()->level == 2)
+        <button class="btn btn-info" data-toggle="modal" data-target="#upload-wp-file-modal">Upload File WP & JSA Inpekta</button>
+        @elseif($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file != null)
+        <div class="callout callout-info">
+            <h4>File WP & JSA Inspekta</h4>
+            <p><a target="_blank" href="{!! url($wp->wp_file) !!}">{{ $wp->wp_file }}</a></p>
+        </div>
+        @endif
+
+        @if($wp->jsa_rev == 0 && $wp->submit == 1)
+        <div class="callout callout-warning">
+            <h4>Warning !</h4>
+            <p>Review JSA terlebih dahulu sebelum Approval</p>
+        </div>
+        @endif
     </div>
 </div>
 <div class="row">
@@ -722,7 +779,10 @@
             </div>
             <div class="box-footer">
                 @if ($wp->wpApproval->man_app == NULL && Auth::user()->status == 'Manajer' && $wp->wpApproval->spv_app != NULL)
-                <button class="btn btn-sm btn-success btn-approve" data-kategori="man_app">Approve</button>
+                @if($wp->kategori == 'inspekta')
+                <a class="btn btn-sm btn-warning btn-verifikasi" data-cat="man" href="#">Verifikasi Inspekta</a>
+                @endif
+                <button id="btn-app-man" class="btn btn-sm btn-success btn-approve" data-kategori="man_app">Approve</button>
                 <button class="btn btn-sm btn-danger btn-reject pull-right" data-kategori="man_reject">Koreksi</button>
                 @endif
             </div>
@@ -743,7 +803,10 @@
             </div>
             <div class="box-footer">
                 @if ($wp->wpApproval->ppk3_app != NULL && $wp->wpApproval->spv_app == NULL && Auth::user()->level == 3 && $wp->bidang == Auth::user()->bidang && Auth::user()->usersUnit != NULL && $wp->unit_id == Auth::user()->usersUnit->unit_id)
-                <button class="btn btn-sm btn-success btn-approve" data-kategori="spv_app">Approve</button>
+                @if($wp->kategori == 'inspekta')
+                <a class="btn btn-sm btn-warning btn-verifikasi" data-cat="spv" href="#">Verifikasi Inspekta</a>
+                @endif
+                <button id="btn-app-spv" class="btn btn-sm btn-success btn-approve" data-kategori="spv_app">Approve</button>
                 <button class="btn btn-sm btn-danger btn-reject pull-right" data-kategori="spv_reject">Koreksi</button>
                 @endif
             </div>
@@ -756,6 +819,8 @@
                 <b><i class="fa fa-check"></i> Diperiksa oleh Pejabat Pelaksana K3</b>
             </div>
             <div class="box-body text-center">
+              
+
                 @if ($wp->wpApproval->ppk3_app == NULL)
                 <img src="{!! asset('notapprove.png') !!}" width="40%" alt="">
                 @else
@@ -763,9 +828,13 @@
                 @endif
             </div>
             <div class="box-footer">
+                
                 @if ($wp->wpApproval->ppk3_app == NULL && Auth::user()->level == 2 && Auth::user()->usersUnit != NULL 
                 && $wp->unit_id == Auth::user()->usersUnit->unit_id && $wp->reject == 0 && $wp->jsa != NULL && $wp->jsa->review == 'JSA telah di review dan disetujui')
-                <button class="btn btn-sm btn-success btn-approve" data-kategori="ppk3_app">Approve</button>
+                @if($wp->kategori == 'inspekta')
+                <a class="btn btn-sm btn-warning btn-verifikasi" data-cat="ppk3" href="#">Verifikasi Inspekta</a>
+                @endif
+                <button id="btn-app-k3" class="btn btn-sm btn-success btn-approve" data-kategori="ppk3_app">Approve</button>
                 @endif
 
                 @if ($wp->wpApproval->ppk3_app == NULL && Auth::user()->level == 2 && Auth::user()->usersUnit != NULL && $wp->unit_id == Auth::user()->usersUnit->unit_id && $wp->reject == 0 && $wp->jsa != NULL && $wp->jsa->review == 'JSA telah di review dan disetujui')
@@ -806,6 +875,64 @@
 
 
 <script type="text/javascript">
+    @if($wp->kategori == 'inspekta')
+    $('#btn-app-k3').hide()
+    $('#btn-app-spv').hide()
+    $('#btn-app-man').hide()
+    @endif
+
+    $(document).on('click','.btn-verifikasi', function(e){
+        e.preventDefault()
+        Swal.fire({
+            title: 'Warning',
+            text: "Lakukan verifikasi INSPEKTA dan lanjutkan approval di SIISPEK",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ok !'
+        }).then((result) => {
+            if (result.value) {
+                var cat = $(this).data('cat')
+                if(cat == 'ppk3'){
+                    $('#btn-app-k3').show()
+                }else if(cat == 'spv'){
+                    $('#btn-app-spv').show()
+                }else if(cat == 'man'){
+                    $('#btn-app-man').show()
+                }
+                let params = `scrollbars=yes,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1000,height=1000,left=100,top=100`;
+                open("{{ $wp->url }}", 'Inspekta', params);
+                
+            }
+        })
+
+    })
+
+    $('#form_upload_wp').on('submit', function (e) {
+        showPleaseWait()
+        e.preventDefault()
+        $.ajax({
+            type: 'post',
+            url: "{!! url('work-permit/upload-wp-file') !!}",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (r) {
+                hidePleaseWait()
+                if (r == 'success') {
+                    Swal.fire(
+                    'Yeaa !',
+                    'Simpan data berhasil !',
+                    'success'
+                    ).then(function () {
+                        location.reload()
+                    })
+                }
+            }
+        })
+    })
 
     $(document).on("click", ".btn-resubmit", function (e) {
         e.preventDefault()

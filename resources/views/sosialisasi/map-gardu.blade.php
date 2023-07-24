@@ -99,7 +99,7 @@
         locations = @json($map_ref, JSON_PRETTY_PRINT);
         
     
-        var map = L.map('map').setView([-8.587661,116.0990838], 8);
+        var map = L.map('map').setView([-8.721099, 117.198298], 8);
         mapLink ='<a href="http://openstreetmap.org">OpenStreetMap</a>';
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; ' + mapLink + ' Contributors',
