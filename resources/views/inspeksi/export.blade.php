@@ -183,7 +183,7 @@
                 <br>
                 <br>
                 @foreach ($inspeksiLanjut->inspeksiFoto as $foto)
-                <img src="{!! url($foto->foto) !!}" style="width: 300px;height: 200px;" alt="Attachment">
+                <img src="{!! "http://sscpln.com/wp/".$foto->foto !!}" style="width: 300px;height: 200px;" alt="Attachment">
                 @endforeach
             </td>
         </tr>

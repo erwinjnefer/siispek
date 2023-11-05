@@ -183,6 +183,11 @@
                             </li>
 
                             <li>
+                                <a href="{!! url('inspeksi/today') !!}">
+                                    <i class="fa fa-history text-success"></i> <span>Pekerjaan Berlangsung</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="{!! url('inspeksi') !!}">
                                     <i class="fa fa-check text-danger"></i> <span>Inspeksi</span>
                                 </a>

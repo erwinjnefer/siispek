@@ -499,13 +499,20 @@
         <br>
         @endif
 
+        @if($wp->wpApproval->man_app == null)
+        <div class="callout callout-danger">
+            <h4>Warning !</h4>
+            <p>Approval WP belum selesai</p>
+        </div>
+        @endif
+
         
         <div class="box">
             <div class="box-header with-border">
                 <h4>I. INFORMASI PEKERJAAN</h4>
                 <div class="box-tools">
                     @if($wp->inspeksi != null)
-                    {{-- <a href="{!! url('inspeksi/export?id='.$wp->id) !!}" class="btn btn-success btn-sm"><i class="fa fa-file-pdf-o"></i> Export PDF</a> --}}
+                
                     @endif
                 </div>
             </div>
@@ -572,7 +579,11 @@
                 <a href="{!! url('work-permit/print?id='.$wp->id) !!}" target="_blank"><span class="badge bg-aqua">Work Permit</span></a>
                 <a href="{!! url('jsa/preview?id='.$wp->jsa->id) !!}" target="_blank"><span class="badge bg-aqua">File JSA</span></a>
                 @else
-                <a href="{!! url($wp->wp_file) !!}" target="_blank"><span class="badge bg-aqua">File Work Permit & JSA</span></a>
+                    @if($wp->wp_file != null)
+                    <a href="{!! url($wp->wp_file) !!}" target="_blank"><span class="badge bg-aqua">File Work Permit & JSA</span></a>
+                    @else
+                    <a href="#" target="_blank" class="btn-open-inspekta"><span class="badge bg-aqua">File Work Permit & JSA</span></a>
+                    @endif
                 @endif
                 <a href="{!! url($wp->workPermitProsedurKerja->prosedurKerja->file) !!}" target="_blank"><span class="badge bg-aqua">File SOP</span></a>
             </div>
@@ -584,9 +595,6 @@
             <div class="box-header with-border">
                 <h4>III. INSPEKSI MANDIRI</h4>
                 <div class="box-tools">
-                    {{-- @if($wp->inspeksi != null && $wp->inspeksi->status != 'SWA')
-                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#review-im-modal"><i class="fa fa-check"></i> Review Inspeksi Mandiri</button>
-                    @endif --}}
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -735,6 +743,11 @@
         fullscreen: true,
         imageSize: 'contain'
     }).data('chocolate');
+
+    $(document).on('click', '.btn-open-inspekta', function (e) {
+        let params = `scrollbars=yes,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1000,height=1000,left=100,top=100`;
+        open("{{ $wp->url }}", 'Inspekta', params);
+    })
 
     $(document).on('click', '.btn-review-im', function (e) {
         e.preventDefault()

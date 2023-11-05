@@ -159,12 +159,12 @@
                 </div>
             </div>
 
-            @if($jsa->workPermit->kategori == 'inspekta')
+            {{-- @if($jsa->workPermit->kategori == 'inspekta')
             <div class="callout callout-success">
                 <h4>URL Inspekta</h4>
                 <p><a target="_blank" href="{!! $wp->url !!}">{{ $wp->url }}</a></p>
             </div>
-            @endif
+            @endif --}}
 
 
             @if($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file != null)

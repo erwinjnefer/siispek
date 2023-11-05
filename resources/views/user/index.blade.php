@@ -86,8 +86,13 @@
                         <select name="status" class="form-control">
                             <option>Admin</option>
                                 <option>Manajer</option>
+                                <option>General Manajer</option>
                                 <option>Senior Manajer</option>
+                                <option>Manajer K3LKAM</option>
+                                <option>Asman K3LKAM</option>
+                                <option>Officer K3</option>
                                 <option>Manajer Bidang</option>
+                                <option>Pejabat Pelaksana K3</option>
                                 <option>PJ Ops</option>
                                 <option>Manajer Bagian Keuangan dan Umum</option>
                                 <option>Manajer Bagian Konstruksi</option>
@@ -151,7 +156,12 @@
                             <select name="status" id="e_status" class="form-control">
                                 <option>Admin</option>
                                 <option>Manajer</option>
+                                <option>General Manajer</option>
                                 <option>Senior Manajer</option>
+                                <option>Manajer K3LKAM</option>
+                                <option>Asman K3LKAM</option>
+                                <option>Officer K3</option>
+                                <option>Pejabat Pelaksana K3</option>
                                 <option>PJ Ops</option>
                                 <option>Manajer Bidang</option>
                                 <option>Manajer Bagian Keuangan dan Umum</option>
@@ -268,9 +278,25 @@
                                 <option value=""></option>
                                 <option>Admin</option>
                                 <option>Manajer</option>
-                                <option>Supervisor</option>
+                                <option>General Manajer</option>
+                                <option>Senior Manajer</option>
+                                <option>Manajer K3LKAM</option>
+                                <option>Asman K3LKAM</option>
+                                <option>Officer K3</option>
                                 <option>Pejabat Pelaksana K3</option>
-                                <option>User PLN</option>
+                                <option>PJ Ops</option>
+                                <option>Manajer Bidang</option>
+                                <option>Manajer Bagian Keuangan dan Umum</option>
+                                <option>Manajer Bagian Konstruksi</option>
+                                <option>Manajer Bagian Jaringan</option>
+                                <option>Manajer Bagian Pemasaran dan Pelayanan Pelanggan</option>
+                                <option>Manajer Bagian Transaksi Energi</option>
+                                <option>Manajer Bagian Perencanaan</option>
+                                <option>Supervisor Teknik</option>
+                                <option>Supervisor Pelayanan Pelanggan</option>
+                                <option>Supervisor Transaksi Energi</option>
+                                <option>Pejabat K3L dan KAM</option>
+                                <option>Pengawas Manuver</option>
                                 <option>Vendor</option>
                             </select>
                         </div>

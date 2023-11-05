@@ -72,7 +72,7 @@ class HomeController extends Controller
             $data['unit'] = Unit::all();  
             
 
-        }elseif(Auth::user()->status == 'Admin'){
+        }elseif(Auth::user()->status == 'Admin' || (Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit_id == 8)){
             $data['wp'] = WorkPermit::orderBy('id','desc')->get();
             $data['unit'] = Unit::all();
 
@@ -103,7 +103,7 @@ class HomeController extends Controller
 
             
 
-        }elseif( (Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && Auth::user()->usersUnit != null ){
+        }elseif( (Auth::user()->level == 0 || Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 4) && Auth::user()->usersUnit != null ){
             $data['wp'] = WorkPermit::where('unit_id', Auth::user()->usersUnit->unit_id)->orderBy('id','desc')->get();
             $data['unit'] = Unit::all();
 

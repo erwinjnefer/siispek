@@ -6,12 +6,11 @@
 @section('content-header')
 <section class="content-header">
     <h1>
-        Inspeksi
-        <small>30 Hari sejak tanggal {{ date('d-m-Y', strtotime($d1)) }}</small>
+        Pekerjaan Berlangsung
     </h1>
     <ol class="breadcrumb">
         <li><a href="{!! url('home') !!}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Inspeksi</li>
+        <li class="active">Inspeksi Berlangsung</li>
     </ol>
 </section>
 @endsection
@@ -44,12 +43,12 @@
     <div class="modal fade" id="filter-modal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="form_filter" method="get" action="{{ url('inspeksi') }}">
+                <form id="form_filter" method="get" action="{{ url('inspeksi/today') }}">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title">Filter 30 Hari Sejak Tanggal</h4>
+                        <h4 class="modal-title">Filter Tanggal</h4>
                     </div>
                     <div class="modal-body">
                         @csrf
@@ -63,12 +62,13 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">Search</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
     
     <div class="col-md-12">
         <div class="box">
@@ -97,12 +97,12 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Tgl. Pengajuan</th>
+                                    <th>Tgl. Pelaksanaan</th>
                                     <th>Jenis Pekrjaan</th>
                                     <th>Detail Pekrjaan</th>
                                     <th>Unit</th>
                                     <th>Vendor</th>
-                                    {{-- <th style="text-align: center">Option</th> --}}
+                                    <th style="text-align: center">Approval</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,7 +112,7 @@
                                 @foreach ($wp as $wp)
                                 <tr>
                                     <td width="1%">{!! $no ++ !!}</td>
-                                    <td width="5%">{!! date('d-m-Y', strtotime($wp->tgl_pengajuan)) !!}</td>
+                                    <td width="5%">{!! date('d-m-Y', strtotime($wp->tgl_rencana_pelaksanaan)) !!}</td>
                                     <td width="5%">{!! $wp->jenis_pekerjaan !!}</td>
                                     <td width="15%">
                                         @if ($wp->jsa != null && $wp->workPermitProsedurKerja != null && $wp->workPermitHirarc != null)
@@ -127,9 +127,13 @@
                                     </td>
                                     <td width="5%">{{ $wp->unit->nama }}</td>
                                     <td width="5%">{{ $wp->users->name }}</td>
-                                    {{-- <td align="center" width="3%">
-                                        <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $wp->id }}">Delete</a>
-                                    </td> --}}
+                                    <td align="center" width="3%">
+                                        @if($wp->wpApproval->man_app != null)
+                                        <span class="badge bg-green">Complete</span>
+                                        @else
+                                        <span class="badge bg-yellow">Waiting</span>
+                                        @endif
+                                    </td>
 
                                 </tr>
                                 @endforeach
@@ -196,46 +200,6 @@
         })
     })
     
-    $(document).on('click','.btn-create', function(e){
-        
-        window.location = "{{ url('work-permit/form') }}"
-    })
-
-    $(document).on("click", ".btn-delete", function (e) {
-        e.preventDefault()
-        var id = $(this).data('id');
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
-                del(id)
-            }
-        })
-    });
-
-
-    function del(id) {
-        $.ajax({
-            type: 'get',
-            url: "{!! url('work-permit/delete?id=') !!}"+id,
-            success: function (r) {
-                console.log(r)
-                if (r == 'success') {
-                    Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
-                        'success'
-                    )
-                    location.reload()
-                }
-            }
-        })
-    }
+    
 </script>
 @endsection

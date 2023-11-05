@@ -40,7 +40,9 @@ class WorkOrderController extends Controller
             $d1 = date('Y-m-d', strtotime($d2." -30 days"));
         }
 
-        if($u->status == 'Admin'|| (Auth::user()->status == 'Manajer' && Auth::user()->usersUnit->unit->nama == 'UP2K')){
+        if($u->status == 'Admin'){
+            $wo = WorkOrder::where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
+        }elseif((Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit_id == 8) || (Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit->nama == 'UP2K')){
             $wo = WorkOrder::where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
             $wo = WorkOrder::where('users_id', $u->id)->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
@@ -92,7 +94,7 @@ class WorkOrderController extends Controller
             $logs->work_order_id = $wo->id;
             $logs->save();
 
-            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di http://sscpln.com/sbw atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
+            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di https://sscpln.com/wp atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
             event(new Whatsapp($wo->users->no_wa, $msg));
 
             DB::commit();
@@ -122,6 +124,30 @@ class WorkOrderController extends Controller
             if($wo->wowp != null){
                 $wp = WorkPermit::find($wo->woWp->work_permit_id);
                 $wp->unit_id = $r->unit_id;
+                $wp->save();
+            }
+            
+            
+            DB::commit();
+            return 'success';
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return $th->getMessage();
+        }
+    }
+
+    public function editKategori(Request $r)
+    {
+        DB::beginTransaction();
+        try {
+            $wo = WorkOrder::find($r->id);
+            $wo->kategori = $r->kategori;
+            $wo->save();
+            
+            if($wo->wowp != null){
+                $wp = WorkPermit::find($wo->woWp->work_permit_id);
+                $wp->kategori = $r->kategori;
                 $wp->save();
             }
             

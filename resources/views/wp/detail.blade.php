@@ -1,6 +1,9 @@
 @extends('layouts.master')
 @section('css')
-<link rel="stylesheet" href="{!! asset('/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') !!}">
+<link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
+<link rel="stylesheet" href="{!! asset('/admin/bower_components/select2/dist/css/select2.min.css') !!}">
+{{-- <link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-timepicker/css/timepicker.less') }}"> --}}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-timepicker@0.5.2/css/bootstrap-timepicker.min.css"rel="stylesheet">
 
 @endsection
 @section('content-header')
@@ -18,6 +21,37 @@
 @endsection
 @section('content')
 <div class="row">
+
+    <div class="modal fade" id="edit-tgl-pelaksanaan-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form_edit_tgl_pelaksanaan" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Edit Tgl. Pelaksanaan</h4>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        
+                        <input type="hidden" name="id" value="{{ $wp->id }}">
+                        <div class="form-group">
+                            <label for="">Keterangan</label>
+                            <input type="text" readonly class="form-control" name="tgl_rencana_pelaksanaan" id="e_tgl_rencana_pelaksanaan" value="{{ date('d-m-Y', strtotime($wp->tgl_rencana_pelaksanaan)) }}">
+                        </div>
+                        
+                        
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary pull-left">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="view-hirarc-modal">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -444,6 +478,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="">Tgl. Rencana Pelaksanaan</label>
+                            <input type="text" class="form-control" placeholder="" readonly value="{{ $wp->tgl_rencana_pelaksanaan }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <button style="margin-top: 25px;" class="btn btn-warning" data-toggle="modal" data-target="#edit-tgl-pelaksanaan-modal">Edit</button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -747,7 +793,7 @@
         @endif --}}
 
 
-        @if($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file == null && Auth::user()->level == 2)
+        @if($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file == null && (Auth::user()->level == 2 || Auth::id() == $wp->users_id))
         <button class="btn btn-info" data-toggle="modal" data-target="#upload-wp-file-modal">Upload File WP & JSA Inpekta</button>
         @elseif($wp->kategori == 'inspekta' && $wp->wpApproval->man_app != null && $wp->wp_file != null)
         <div class="callout callout-info">
@@ -756,12 +802,12 @@
         </div>
         @endif
 
-        @if($wp->jsa_rev == 0 && $wp->submit == 1)
+        {{-- @if($wp->jsa_rev == 0 && $wp->submit == 1)
         <div class="callout callout-warning">
             <h4>Warning !</h4>
             <p>Review JSA terlebih dahulu sebelum Approval</p>
         </div>
-        @endif
+        @endif --}}
     </div>
 </div>
 <div class="row">
@@ -872,6 +918,8 @@
 @section('js')
 
 <script src="{!! asset('pdfobject.js') !!}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="{{ asset('admin/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 
 
 <script type="text/javascript">
@@ -880,6 +928,11 @@
     $('#btn-app-spv').hide()
     $('#btn-app-man').hide()
     @endif
+
+    $('#e_tgl_rencana_pelaksanaan').datepicker({
+        autoclose: true,
+        format: 'dd-mm-yyyy',
+    })
 
     $(document).on('click','.btn-verifikasi', function(e){
         e.preventDefault()
@@ -907,6 +960,31 @@
             }
         })
 
+    })
+
+    $('#form_edit_tgl_pelaksanaan').on('submit', function (e) {
+        showPleaseWait()
+        e.preventDefault()
+        $.ajax({
+            type: 'post',
+            url: "{!! url('work-permit/edit-tgl-pelaksanaan') !!}",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (r) {
+                hidePleaseWait()
+                if (r == 'success') {
+                    Swal.fire(
+                    'Yeaa !',
+                    'Simpan data berhasil !',
+                    'success'
+                    ).then(function () {
+                        location.reload()
+                    })
+                }
+            }
+        })
     })
 
     $('#form_upload_wp').on('submit', function (e) {

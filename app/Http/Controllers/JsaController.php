@@ -242,7 +242,7 @@ class JsaController extends Controller
                 "\nTgl Pekerjaan : ".date('d-m-Y', strtotime($wp->tgl_pengajuan)).
                 "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
                 
                 if($ud != null && $ud->no_wa != null){
                     // $wa = new MBroker();
@@ -296,7 +296,7 @@ class JsaController extends Controller
                 "\nTgl. Koreksi : ".date('d-m-Y').
                 "\nKoreksi : *".$jsa->note."*".
                 
-                "\n\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\n\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
     
                 if($jsa->workPermit->users->no_wa != null){
                     event(new Whatsapp($jsa->workPermit->users->no_wa, $text));

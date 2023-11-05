@@ -46,6 +46,7 @@ Route::get('work-order','WorkOrderController@view');
 Route::post('work-order/create','WorkOrderController@create');
 Route::get('work-order/delete','WorkOrderController@delete');
 Route::post('work-order/edit-unit','WorkOrderController@editUnit');
+Route::post('work-order/edit-kategori','WorkOrderController@editKategori');
 
 Route::get('logs-history','WorkOrderController@logsHistory');
 
@@ -63,6 +64,7 @@ Route::get('work-permit/send-wa','WorkPermitController@sendWa');
 Route::post('work-permit/create','WorkPermitController@create');
 Route::post('work-permit/create-inspekta','WorkPermitController@createInspekta');
 Route::post('work-permit/update','WorkPermitController@update');
+Route::post('work-permit/edit-tgl-pelaksanaan','WorkPermitController@editTglPelaksanaan');
 Route::post('work-permit/approve','WorkPermitController@approve');
 Route::post('work-permit/reject','WorkPermitController@reject');
 Route::post('work-permit/update-bidang','WorkPermitController@updateBidang');
@@ -85,6 +87,7 @@ Route::get('jsa/reset', 'JsaController@resetJSA');
 Route::post('jsa/review', 'JsaController@review');
 
 Route::get('/inspeksi', 'InspeksiController@view');
+Route::get('/inspeksi/today', 'InspeksiController@viewToday');
 Route::get('/inspeksi/detail', 'InspeksiController@detail');
 Route::get('/inspeksi/form', 'InspeksiController@form');
 Route::get('/inspeksi/preview', 'InspeksiController@preview');

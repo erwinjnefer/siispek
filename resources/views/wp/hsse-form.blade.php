@@ -2,6 +2,9 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
 <link rel="stylesheet" href="{!! asset('/admin/bower_components/select2/dist/css/select2.min.css') !!}">
+{{-- <link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-timepicker/css/timepicker.less') }}"> --}}
+{{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap-timepicker@0.5.2/css/bootstrap-timepicker.min.css"rel="stylesheet"> --}}
+
 @endsection
 @section('content-header')
 <section class="content-header">
@@ -124,20 +127,7 @@
         <div class="col-md-6">
             <div class="box">
                 <div class="box-header with-border">
-                    <h4>A. FORM WORKING PERMIT INSPEKTA</h4>
-                </div>
-                <div class="box-body">
-
-                    <div class="callout callout-success">
-                        <h4>URL Inspekta</h4>
-                        <p><a href="#" class="form_link">Open Link</a></p>
-                    </div>
-
-                </div>
-            </div>
-            <div class="box">
-                <div class="box-header with-border">
-                    <h4>B. INFORMASI PEKERJAAN</h4>
+                    <h4>A. INFORMASI PEKERJAAN</h4>
                 </div>
                 <div class="box-body">
                     
@@ -277,19 +267,16 @@
                             @endforeach --}}
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label for="">Link Detail Work Permit Inspekta</label>
-                        <input type="text" class="form-control" placeholder="" name="url">
-                    </div>
                 </div>
-            </div>  
+            </div>
+
+            
         </div>
 
         <div class="col-md-6">
             <div class="box">
                 <div class="box-header">
-                    <h4>C. DURASI KERJA</h4>
+                    <h4>B. DURASI KERJA</h4>
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -303,7 +290,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Jam Mulai</label>
-                                <input type="text" class="form-control" placeholder="" name="jam_mulai">
+                                <input type="text" class="form-control" placeholder="" id="jam_mulai" name="jam_mulai">
                             </div>
                         </div>
                     </div>
@@ -318,7 +305,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Jam Selesai</label>
-                                <input type="text" class="form-control" placeholder="" name="jam_selesai">
+                                <input type="text" class="form-control" placeholder="" id="jam_selesai" name="jam_selesai">
                             </div>
                         </div>
                     </div>
@@ -329,6 +316,26 @@
                     </div>
                 </div>
 
+                
+            </div>
+
+            <div class="box">
+                <div class="box-header with-border">
+                    <h4>C. FORM WORKING PERMIT INSPEKTA</h4>
+                </div>
+                <div class="box-body">
+
+                    <div class="callout callout-success">
+                        <h4>URL Inspekta</h4>
+                        <p><a href="#" class="form_link">Open Link</a></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Link Detail Work Permit Inspekta</label>
+                        <input type="text" class="form-control" placeholder="" name="url">
+                    </div>
+
+                </div>
                 <div class="box-footer">
                     <button type="button" class="btn btn-success" id="btn-save">SIMPAN</button>
                 </div>
@@ -345,6 +352,8 @@
 @section('js')
 <script src="{{ asset('admin/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 <script src="{!! asset('admin/bower_components/select2/dist/js/select2.full.min.js') !!}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="{{ asset('admin/bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js') }}"></script>
 <script type="text/javascript">
     var jsa_file_id = 0
     var kp4_lain = ''
@@ -393,6 +402,13 @@
     $('#datepicker,#tgl_mulai,#tgl_selesai,#tgl_rencana_pelaksanaan').datepicker({
         autoclose: true,
         format: 'dd-mm-yyyy',
+    })
+
+    $('#jam_mulai,#jam_selesai').timepicker({
+      showInputs: false,
+      use24hours: true,
+      format: 'HH:mm',
+      showMeridian: false
     })
 
     // HIRARC

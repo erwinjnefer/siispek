@@ -53,7 +53,7 @@ class WorkOrderController extends Controller
             }
             // $data['vendor'] = User::where('status','Vendor')->get();
             $data['unit'] = Unit::all();  
-        }elseif(Auth::user()->status == 'Admin'){
+        }elseif(Auth::user()->status == 'Admin' || (Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit_id == 8)){
             $data['wp'] = WorkPermit::where('tgl_mulai','like',"%".date('Y')."%")->get();
             $data['unit'] = Unit::all();
 
@@ -143,7 +143,7 @@ class WorkOrderController extends Controller
             $d1 = date('Y-m-d', strtotime($d2." -30 days"));
         }
 
-        if($u->status == 'Admin'){
+        if($u->status == 'Admin' || (Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit_id == 8)){
             $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
             $wo = WorkOrder::with('woWp.workPermit.wpApproval')->with('users')->with('unit')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('users_id', $u->id)->orderBy('id','desc')->get();
@@ -185,7 +185,7 @@ class WorkOrderController extends Controller
             $logs->work_order_id = $wo->id;
             $logs->save();
 
-            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di http://sscpln.com/sbw atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
+            $msg = "Hi *".$wo->users->name."*,\nAnda ditunjuk untuk melaksanakan pekerjaan \n*$wo->nama*\nSilahkan lanjutkan untuk membuat Work Permit di https://sscpln.com/wp atau masuk ke menu Work Order kolom Work Permit. Terimakasih !";
             event(new Whatsapp($wo->users->no_wa, $msg));
 
             DB::commit();

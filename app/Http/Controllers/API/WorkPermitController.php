@@ -31,7 +31,7 @@ class WorkPermitController extends Controller
         }
         
         $wp = [];
-        if($u->status == 'Admin'){
+        if($u->status == 'Admin'|| (Auth::user()->usersUnit != null && Auth::user()->usersUnit->unit_id == 8)){
             $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->orderBy('id','desc')->get();
         }elseif($u->status == 'Vendor'){
             $wp = WorkPermit::with('woWp')->with('wpApproval')->with('workPermitPP.pegawai')->with('workPermitPPK3.pegawai')->with('unit')->with('workPermitHirarc.hirarc')->with('workPermitProsedurKerja.prosedurKerja')->with('jsa')->with('inspeksi')->with('users')->where('tgl_mulai','>=', $d1)->where('tgl_mulai','<=', $d2)->where('users_id', $u->id)->orderBy('id','desc')->get();
@@ -83,7 +83,7 @@ class WorkPermitController extends Controller
                 "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
                 "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
 
                 $wo->progress = 'Submit WP';
             }else{
@@ -97,7 +97,7 @@ class WorkPermitController extends Controller
                 "\nPengawas Manuver : ".$wp->pengawasManuver->users->name.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
                 "\nDari tgl : ".$wp->tgl_mulai.' s/d '.$wp->tgl_selesai.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
 
                 $wo->progress = 'Re-Submit WP';
             }
@@ -146,13 +146,34 @@ class WorkPermitController extends Controller
                 "\nJenis Pekerjaan : ".$wp->jenis_pekerjaan.
                 "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
                 "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
-                "\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
             
             if($r->kategori == 'man_app'){
                 if($wp->users->no_wa != null){
-                    // $was = new MBroker();
-                    // $was->publish($wp->users->no_wa, $text, null);
-                    event(new Whatsapp($wp->users->no_wa, $text));
+                    if($wp->kategori == 'inspekta'){
+                        $text = "APPROVAL WORKING PERMIT oleh ".Auth::user()->name.' untuk pekerjaan :'.
+                        "\nTgl Pekerjaan : ".date('d-m-Y', strtotime($wp->tgl_pengajuan)).
+                        "\nJenis Pekerjaan : ".$wp->jenis_pekerjaan.
+                        "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
+                        "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
+                        "\nSilahkan export file WP INSPEKTA dan Upload di SIISPEK Untuk lebih detail kunjungi https://sscpln.com/wp atau https://sscpln.com/wp/work-permit/detail?id=$wp->id Terimakasih";
+                        
+                        $ud = User::where('level', 2)->whereHas('usersUnit', function($q)use($wp){
+                            return $q->where('unit_id', $wp->unit_id);
+                        })->first();
+
+                        event(new Whatsapp($wp->users->no_wa, $text));
+                        event(new Whatsapp($ud->no_wa, $text));
+                    }else{
+                        $text = "APPROVAL WORKING PERMIT oleh ".Auth::user()->name.' untuk pekerjaan :'.
+                        "\nTgl Pekerjaan : ".date('d-m-Y', strtotime($wp->tgl_pengajuan)).
+                        "\nJenis Pekerjaan : ".$wp->jenis_pekerjaan.
+                        "\nDetail Pekerjaan : ".$wp->detail_pekerjaan.
+                        "\nLokasi Pekerjaan : ".$wp->lokasi_pekerjaan.
+                        "\nUntuk lebih detail kunjungi https://sscpln.com/wp atau https://sscpln.com/wp/work-permit/detail?id=$wp->id Terimakasih";
+                        
+                        event(new Whatsapp($wp->users->no_wa, $text));
+                    }
                 }
             }elseif($r->kategori == 'spv_app'){
                 $um = User::where('level', 4)->whereHas('usersUnit', function($q)use($wp){
@@ -234,7 +255,7 @@ class WorkPermitController extends Controller
                 "\nTgl. Koreksi : ".date('d-m-Y').
                 "\nKoreksi : *".$jsa->note."*".
                 
-                "\n\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+                "\n\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
     
                 if($jsa->workPermit->users->no_wa != null){
                     event(new Whatsapp($jsa->workPermit->users->no_wa, $text));
@@ -288,7 +309,7 @@ class WorkPermitController extends Controller
             "\nTgl. Koreksi : ".date('d-m-Y').
             "\nCatatan : ".$wp->reject_message.
             
-            "\n\nUntuk lebih detail kunjungi http://sscpln.com/sbw Terimakasih";
+            "\n\nUntuk lebih detail kunjungi https://sscpln.com/wp Terimakasih";
 
             if($wp->users->no_wa != null){
                 event(new Whatsapp($wp->users->no_wa, $text));

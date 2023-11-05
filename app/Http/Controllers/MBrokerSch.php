@@ -18,7 +18,7 @@ class MBrokerSch extends Controller
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => array('device_id' => 'dbc647e113fa3808b01c3a9d837a8151','number' => $no_hp,'message' => $pesan, 'schedule' => $sch),
+        CURLOPT_POSTFIELDS => array('device_id' => '0eb2901eacc5ddbf1f205fc5fed0ee50','number' => $no_hp,'message' => $pesan, 'schedule' => $sch),
         ));
 
         $response = curl_exec($curl);

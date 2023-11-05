@@ -201,6 +201,39 @@
     </div>
 </div>
 
+<div class="modal fade" id="edit-kategori-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_kategori_edit">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Unit</h4>
+                </div>
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" id="k_id" name="id">
+                    
+                    <div class="form-group">
+                        <label for="">Create WP</label>
+                        <select name="kategori" id="k_wp" class="form-control" required>
+                            <option value="form">Form Non Inspekta</option>
+                            <option value="inspekta">Form Inspekta</option>
+                        </select>
+                    </div>
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="filter-modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -324,7 +357,7 @@
                                         @if ($wo->woWp != null && $wo->kategori == 'inspekta' && $wo->woWp->workPermit->url != null)
                                             <a target="_blank" href="{{ $wo->woWp->workPermit->url }}">{{ $wo->kategori }}</a>
                                         @else
-                                        {{ $wo->kategori }}
+                                            <a href="#" class="btn-edit-kategori" data-id="{{ $wo->id }}" data-kategori="{{ $wo->kategori }}">{{ $wo->kategori }}</a>
                                         @endif
                                     </td>
                                     <td align="center" width="3%">
@@ -393,6 +426,39 @@
                     )
                 })
 
+            }
+        })
+    })
+
+    $(document).on('click', '.btn-edit-kategori', function () {
+        
+        $('#k_id').val($(this).data('id'))
+        $('#k_wp').val($(this).data('kategori'))
+      
+        
+        $('#edit-kategori-modal').modal('show')
+    })
+
+    $('#form_kategori_edit').on('submit', function (e) {
+        e.preventDefault()
+        $.ajax({
+            type: 'post',
+            url: "{!! url('work-order/edit-kategori') !!}",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (r) {
+                console.log(r)
+                if (r == 'success') {
+                    Swal.fire(
+                    'Yeaa !',
+                    'Simpan data berhasil !',
+                    'success'
+                    ).then(function(){
+                        location.reload()
+                    })
+                }
             }
         })
     })

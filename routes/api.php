@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 
 
     Route::get('inspeksi','API\InspeksiController@view');
+    Route::get('inspeksi/today','API\InspeksiController@viewToday');
     Route::get('inspeksi/detail','API\InspeksiController@detail');
     Route::post('inspeksi/review-inspeksi-mandiri', 'API\InspeksiController@reviewInspeksiMandiri');
     Route::post('inspeksi/lanjut/create', 'API\InspeksiController@inputInspeksiLanjut');
